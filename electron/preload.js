@@ -4,6 +4,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // 平台信息
   platform: process.platform,
 
+  i18n: {
+    getLocale: () => ipcRenderer.invoke('i18n:get-locale'),
+    setLocale: (locale) => ipcRenderer.invoke('i18n:set-locale', locale)
+  },
+
   // IPC 通信接口（预留）
   send: (channel, data) => {
     const validChannels = ['app:ready', 'app:minimize', 'app:close']

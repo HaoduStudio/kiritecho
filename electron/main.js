@@ -1,8 +1,100 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
+const fs = require('fs')
 const path = require('path')
 
 const NODE_ENV = process.env.NODE_ENV || 'production'
 const isDev = NODE_ENV === 'development'
+const fallbackLocale = 'zh-CN'
+const supportedLocales = new Set(['zh-CN', 'zh-TW', 'en-US'])
+
+const normalizeLocale = (locale) => {
+  if (!locale || typeof locale !== 'string') {
+    return null
+  }
+
+  const normalized = locale.replace('_', '-').toLowerCase()
+
+  if (normalized === 'zh-cn' || normalized === 'zh-hans' || normalized.startsWith('zh-hans-')) {
+    return 'zh-CN'
+  }
+
+  if (
+    normalized === 'zh-tw' ||
+    normalized === 'zh-hant' ||
+    normalized.startsWith('zh-hant-') ||
+    normalized.startsWith('zh-hk') ||
+    normalized.startsWith('zh-mo')
+  ) {
+    return 'zh-TW'
+  }
+
+  if (normalized.startsWith('zh')) {
+    return 'zh-CN'
+  }
+
+  if (normalized.startsWith('en')) {
+    return 'en-US'
+  }
+
+  return supportedLocales.has(locale) ? locale : null
+}
+
+const getSettingsPath = () => path.join(app.getPath('userData'), 'settings.json')
+
+const readSettings = () => {
+  try {
+    if (!fs.existsSync(getSettingsPath())) {
+      return {}
+    }
+
+    return JSON.parse(fs.readFileSync(getSettingsPath(), 'utf8'))
+  } catch (error) {
+    console.error('Unable to read app settings:', error)
+    return {}
+  }
+}
+
+const writeSettings = (settings) => {
+  try {
+    fs.mkdirSync(app.getPath('userData'), { recursive: true })
+    fs.writeFileSync(getSettingsPath(), JSON.stringify(settings, null, 2), 'utf8')
+  } catch (error) {
+    console.error('Unable to write app settings:', error)
+  }
+}
+
+const getPreferredLocale = () => {
+  const settingsLocale = normalizeLocale(readSettings().locale)
+
+  return settingsLocale || normalizeLocale(app.getLocale()) || fallbackLocale
+}
+
+const saveLocale = (locale) => {
+  const normalizedLocale = normalizeLocale(locale) || fallbackLocale
+  const settings = readSettings()
+
+  writeSettings({
+    ...settings,
+    locale: normalizedLocale
+  })
+
+  return normalizedLocale
+}
+
+const registerI18nHandlers = () => {
+  ipcMain.handle('i18n:get-locale', () => getPreferredLocale())
+  ipcMain.handle('i18n:set-locale', (event, locale) => saveLocale(locale))
+}
+
+const registerWindowHandlers = () => {
+  ipcMain.on('app:minimize', (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.minimize()
+  })
+
+  ipcMain.on('app:close', (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.close()
+  })
+}
 
 function createWindow () {
   const mainWindow = new BrowserWindow({
@@ -11,6 +103,8 @@ function createWindow () {
     minWidth: 780,
     minHeight: 520,
     title: '拾帖 - Kiritecho',
+    frame: false,
+    autoHideMenuBar: true,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -19,6 +113,8 @@ function createWindow () {
       sandbox: true
     }
   })
+
+  mainWindow.setMenuBarVisibility(false)
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173/')
@@ -35,6 +131,8 @@ function createWindow () {
 }
 
 app.whenReady().then(() => {
+  registerI18nHandlers()
+  registerWindowHandlers()
   createWindow()
 
   app.on('activate', () => {

@@ -16,16 +16,16 @@
     </header>
 
     <section class="welcome-copy" aria-labelledby="welcome-title">
-      <h1 id="welcome-title" class="welcome-title">欢迎！</h1>
-      <p class="welcome-description">让 AI 来助力你的资料摘录体验。</p>
+      <h1 id="welcome-title" class="welcome-title">{{ t('splash.title') }}</h1>
+      <p class="welcome-description">{{ t('splash.description') }}</p>
 
       <t-checkbox v-model="hasAgreed" class="agreement-checkbox">
         <span class="agreement-text">
-          我已阅读并同意
-          <t-link theme="primary" hover="color" @click.stop>《用户协议》</t-link>、
-          <t-link theme="primary" hover="color" @click.stop>《隐私政策》</t-link>
-          和
-          <t-link theme="primary" hover="color" @click.stop>《第三方大模型使用协议》</t-link>
+          {{ t('splash.agreementPrefix') }}
+          <t-link theme="primary" hover="color" @click.stop.prevent>{{ t('splash.userAgreement') }}</t-link>、
+          <t-link theme="primary" hover="color" @click.stop.prevent>{{ t('splash.privacyPolicy') }}</t-link>
+          {{ t('splash.agreementJoiner') }}
+          <t-link theme="primary" hover="color" @click.stop.prevent>{{ t('splash.modelAgreement') }}</t-link>
         </span>
       </t-checkbox>
     </section>
@@ -38,7 +38,7 @@
         :disabled="!hasAgreed"
         @click="handleStart"
       >
-        开始使用
+        {{ t('splash.start') }}
         <template #suffix>
           <Icon name="arrow-right" />
         </template>
@@ -49,14 +49,17 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Icon } from 'tdesign-icons-vue-next'
 
+const emit = defineEmits(['start'])
+
+const { t } = useI18n()
 const hasAgreed = ref(false)
 
 const handleStart = () => {
   if (!hasAgreed.value) return
 
-  console.log('开始使用 Kiritecho')
-  // TODO: 路由跳转至主界面
+  emit('start')
 }
 </script>
