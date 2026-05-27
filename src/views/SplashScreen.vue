@@ -40,7 +40,7 @@
       >
         {{ t('splash.start') }}
         <template #suffix>
-          <Icon name="arrow-right" />
+          <ArrowRightIcon />
         </template>
       </t-button>
     </div>
@@ -50,7 +50,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Icon } from 'tdesign-icons-vue-next'
+import ArrowRightIcon from 'tdesign-icons-vue-next/esm/components/arrow-right.js'
 
 const emit = defineEmits(['start'])
 

@@ -45,12 +45,21 @@
 ## TDesign Vue 使用规范
 
 - 优先使用 TDesign Vue 组件构建交互控件，例如 `t-button`、`t-radio-group`、`t-radio`、`t-config-provider`。
-- 图标优先使用 `tdesign-icons-vue-next` 的 `Icon` 组件。
 - 不手写已有 TDesign 能提供的基础控件行为，例如按钮 loading、disabled、单选组状态等。
 - TDesign 组件的视觉覆盖应通过局部 class 和 CSS 变量完成，避免大范围覆盖全局类。
 - 组件状态要完整处理：默认、hover、active/checked、disabled、loading。
 - 交互控件需要保留可访问性语义；图标按钮应提供 `aria-label`。
 - TDesign 国际化配置应继续通过根部 `t-config-provider` 注入。
+
+## 按需导入和构建约束
+
+- 本项目为了控制构建产物体积，不使用 `app.use(TDesign)` 全量注册。
+- 新增 TDesign 组件时，必须在 `src/main.js` 中从对应的 `tdesign-vue-next/es/...` 路径导入，并加入 `tdesignComponents` 数组。
+- 不要重新引入 `tdesign-vue-next/es/style/index.css`，组件样式应随按需组件入口导入。
+- 新增图标时，不要从 `tdesign-icons-vue-next` 根入口导入通用 `Icon` 组件。
+- 图标应从具体文件导入，例如 `tdesign-icons-vue-next/esm/components/arrow-right.js`，并在模板中使用明确组件名，例如 `<ArrowRightIcon />`。
+- 新增第三方依赖后要关注 `npm run build` 输出；如出现超过 500 kB 的 chunk 警告，优先按需导入或在 `vite.config.js` 的 `manualChunks` 中拆分稳定 vendor chunk。
+- 不要为了隐藏警告而单纯调高 `chunkSizeWarningLimit`，除非已经确认包体拆分没有实际收益。
 
 ## 样式规范
 

@@ -46,7 +46,7 @@
                 <span class="theme-option-caption">
                   <span class="theme-option-title">{{ t(option.labelKey) }}</span>
                   <span class="theme-option-check">
-                    <Icon v-if="selectedTheme === option.value" name="check" />
+                    <CheckIcon v-if="selectedTheme === option.value" />
                   </span>
                 </span>
               </span>
@@ -63,7 +63,7 @@
           @click="handleBack"
         >
           <template #prefix>
-            <Icon name="arrow-left" />
+            <ArrowLeftIcon />
           </template>
           {{ t('setup.back') }}
         </t-button>
@@ -76,7 +76,7 @@
         >
           {{ t('setup.next') }}
           <template #suffix>
-            <Icon name="arrow-right" />
+            <ArrowRightIcon />
           </template>
         </t-button>
       </footer>
@@ -87,7 +87,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Icon } from 'tdesign-icons-vue-next'
+import ArrowLeftIcon from 'tdesign-icons-vue-next/esm/components/arrow-left.js'
+import ArrowRightIcon from 'tdesign-icons-vue-next/esm/components/arrow-right.js'
+import CheckIcon from 'tdesign-icons-vue-next/esm/components/check.js'
 import { getThemePreference, setThemePreference } from '@/theme'
 
 const { t } = useI18n()

@@ -9,7 +9,7 @@
         aria-label="Minimize"
         @click="minimizeWindow"
       >
-        <Icon name="minus" />
+        <MinusIcon />
       </t-button>
       <t-button
         variant="text"
@@ -18,14 +18,15 @@
         aria-label="Close"
         @click="closeWindow"
       >
-        <Icon name="close" />
+        <CloseIcon />
       </t-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Icon } from 'tdesign-icons-vue-next'
+import MinusIcon from 'tdesign-icons-vue-next/esm/components/minus.js'
+import CloseIcon from 'tdesign-icons-vue-next/esm/components/close.js'
 
 const minimizeWindow = () => {
   window.electronAPI?.send?.('app:minimize')

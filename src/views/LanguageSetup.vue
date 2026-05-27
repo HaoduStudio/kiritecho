@@ -32,7 +32,7 @@
                 </span>
                 <span class="language-option-title">{{ option.nativeName }}</span>
                 <span class="language-option-check">
-                  <Icon v-if="selectedLocale === option.value" name="check" />
+                  <CheckIcon v-if="selectedLocale === option.value" />
                 </span>
               </span>
             </t-radio>
@@ -49,7 +49,7 @@
           @click="handleBack"
         >
           <template #prefix>
-            <Icon name="arrow-left" />
+            <ArrowLeftIcon />
           </template>
           {{ t('setup.back') }}
         </t-button>
@@ -63,7 +63,7 @@
         >
           {{ t('setup.next') }}
           <template #suffix>
-            <Icon name="arrow-right" />
+            <ArrowRightIcon />
           </template>
         </t-button>
       </footer>
@@ -74,7 +74,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Icon } from 'tdesign-icons-vue-next'
+import ArrowLeftIcon from 'tdesign-icons-vue-next/esm/components/arrow-left.js'
+import ArrowRightIcon from 'tdesign-icons-vue-next/esm/components/arrow-right.js'
+import CheckIcon from 'tdesign-icons-vue-next/esm/components/check.js'
 import CountryFlag from 'vue-country-flag-next'
 import { localeOptions, setAppLocale } from '@/i18n'
 
