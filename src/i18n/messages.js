@@ -16,6 +16,7 @@ export const messages = {
     setup: {
       brand: 'Kiritecho',
       stepLabel: '初始设置',
+      back: '上一步',
       next: '下一步'
     },
     language: {
@@ -47,6 +48,7 @@ export const messages = {
     setup: {
       brand: 'Kiritecho',
       stepLabel: '初始設定',
+      back: '上一步',
       next: '下一步'
     },
     language: {
@@ -78,6 +80,7 @@ export const messages = {
     setup: {
       brand: 'Kiritecho',
       stepLabel: 'Setup',
+      back: 'Back',
       next: 'Next'
     },
     language: {

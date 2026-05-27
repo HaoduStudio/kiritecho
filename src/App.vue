@@ -2,8 +2,8 @@
   <t-config-provider :global-config="tdesignLocale">
     <WindowChrome />
     <SplashScreen v-if="setupStep === 'splash'" @start="showLanguageSetup" />
-    <LanguageSetup v-else-if="setupStep === 'language'" @next="showThemeSetup" />
-    <ThemeSetup v-else-if="setupStep === 'theme'" @next="handleThemeNext" />
+    <LanguageSetup v-else-if="setupStep === 'language'" @back="showSplash" @next="showThemeSetup" />
+    <ThemeSetup v-else-if="setupStep === 'theme'" @back="showLanguageSetup" @next="handleThemeNext" />
   </t-config-provider>
 </template>
 
@@ -28,6 +28,10 @@ const tdesignLocales = {
 }
 
 const tdesignLocale = computed(() => tdesignLocales[locale.value] || zhCN)
+
+const showSplash = () => {
+  setupStep.value = 'splash'
+}
 
 const showLanguageSetup = () => {
   setupStep.value = 'language'

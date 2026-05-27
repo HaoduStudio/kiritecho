@@ -42,9 +42,22 @@
 
       <footer class="setup-footer">
         <t-button
+          theme="default"
+          size="large"
+          class="start-btn setup-back-btn"
+          :disabled="isSaving"
+          @click="handleBack"
+        >
+          <template #prefix>
+            <Icon name="arrow-left" />
+          </template>
+          {{ t('setup.back') }}
+        </t-button>
+
+        <t-button
           theme="primary"
           size="large"
-          class="setup-next-btn"
+          class="start-btn setup-next-btn"
           :loading="isSaving"
           @click="handleNext"
         >
@@ -66,7 +79,7 @@ import CountryFlag from 'vue-country-flag-next'
 import { localeOptions, setAppLocale } from '@/i18n'
 
 const { locale, t } = useI18n()
-const emit = defineEmits(['next'])
+const emit = defineEmits(['back', 'next'])
 
 const selectedLocale = ref(locale.value)
 const isSaving = ref(false)
@@ -92,5 +105,9 @@ const handleLocaleChange = async (value) => {
 const handleNext = async () => {
   await saveLocale(selectedLocale.value)
   emit('next')
+}
+
+const handleBack = () => {
+  emit('back')
 }
 </script>

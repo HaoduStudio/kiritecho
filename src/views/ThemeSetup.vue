@@ -57,9 +57,21 @@
 
       <footer class="setup-footer">
         <t-button
+          theme="default"
+          size="large"
+          class="start-btn setup-back-btn"
+          @click="handleBack"
+        >
+          <template #prefix>
+            <Icon name="arrow-left" />
+          </template>
+          {{ t('setup.back') }}
+        </t-button>
+
+        <t-button
           theme="primary"
           size="large"
-          class="setup-next-btn"
+          class="start-btn setup-next-btn"
           @click="handleNext"
         >
           {{ t('setup.next') }}
@@ -79,7 +91,7 @@ import { Icon } from 'tdesign-icons-vue-next'
 import { getThemePreference, setThemePreference } from '@/theme'
 
 const { t } = useI18n()
-const emit = defineEmits(['next'])
+const emit = defineEmits(['back', 'next'])
 
 const themeOptions = [
   {
@@ -105,5 +117,9 @@ const handleThemeChange = (value) => {
 
 const handleNext = () => {
   emit('next')
+}
+
+const handleBack = () => {
+  emit('back')
 }
 </script>
