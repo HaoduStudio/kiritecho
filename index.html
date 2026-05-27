@@ -6,11 +6,24 @@
   <title>拾帖 - Kiritecho</title>
   <script>
     ;(() => {
+      const supportedThemePreferences = ['light', 'dark', 'system']
       const systemThemeQuery = window.matchMedia?.('(prefers-color-scheme: dark)')
-      const isDark = systemThemeQuery?.matches
-      const themeMode = isDark ? 'dark' : 'light'
+      let themePreference = 'system'
 
+      try {
+        const storedThemePreference = localStorage.getItem('kiritecho.theme')
+        if (supportedThemePreferences.includes(storedThemePreference)) {
+          themePreference = storedThemePreference
+        }
+      } catch {}
+
+      const themeMode = themePreference === 'system'
+        ? (systemThemeQuery?.matches ? 'dark' : 'light')
+        : themePreference
+
+      document.documentElement.setAttribute('theme-preference', themePreference)
       document.documentElement.setAttribute('theme-mode', themeMode)
+      document.documentElement.classList.toggle('dark', themeMode === 'dark')
       document.documentElement.style.colorScheme = themeMode
     })()
   </script>
@@ -22,6 +35,8 @@
       background: #ffffff;
       overflow: hidden;
     }
+    html[theme-mode="light"] body { background: #ffffff; }
+    html[theme-mode="dark"] body { background: #0d0f0e; }
 
     @media (prefers-color-scheme: dark) {
       body { background: #0d0f0e; }

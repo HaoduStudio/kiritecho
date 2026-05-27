@@ -16,11 +16,18 @@ export const messages = {
     setup: {
       brand: 'Kiritecho',
       stepLabel: '初始设置',
-      next: '下一页'
+      next: '下一步'
     },
     language: {
       title: '选择应用语言',
       shortTitle: '语言'
+    },
+    theme: {
+      title: '选择外观模式',
+      shortTitle: '外观',
+      light: '日间模式',
+      dark: '暗黑模式',
+      system: '跟随系统设置'
     }
   },
   'zh-TW': {
@@ -40,11 +47,18 @@ export const messages = {
     setup: {
       brand: 'Kiritecho',
       stepLabel: '初始設定',
-      next: '下一頁'
+      next: '下一步'
     },
     language: {
       title: '選擇應用語言',
       shortTitle: '語言'
+    },
+    theme: {
+      title: '選擇外觀模式',
+      shortTitle: '外觀',
+      light: '日間模式',
+      dark: '暗黑模式',
+      system: '跟隨系統設定'
     }
   },
   'en-US': {
@@ -69,6 +83,13 @@ export const messages = {
     language: {
       title: 'Choose app language',
       shortTitle: 'Language'
+    },
+    theme: {
+      title: 'Choose appearance',
+      shortTitle: 'Appearance',
+      light: 'Light mode',
+      dark: 'Dark mode',
+      system: 'Follow system'
     }
   }
 }

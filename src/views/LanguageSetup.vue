@@ -66,6 +66,7 @@ import CountryFlag from 'vue-country-flag-next'
 import { localeOptions, setAppLocale } from '@/i18n'
 
 const { locale, t } = useI18n()
+const emit = defineEmits(['next'])
 
 const selectedLocale = ref(locale.value)
 const isSaving = ref(false)
@@ -90,5 +91,6 @@ const handleLocaleChange = async (value) => {
 
 const handleNext = async () => {
   await saveLocale(selectedLocale.value)
+  emit('next')
 }
 </script>

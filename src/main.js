@@ -9,18 +9,10 @@ import './styles/setup.css'
 
 import App from './App.vue'
 import { setupI18n } from './i18n'
+import { applyThemePreference, getThemePreference, watchSystemTheme } from './theme'
 
-const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-const applySystemTheme = () => {
-  const themeMode = systemThemeQuery.matches ? 'dark' : 'light'
-
-  document.documentElement.setAttribute('theme-mode', themeMode)
-  document.documentElement.style.colorScheme = themeMode
-}
-
-applySystemTheme()
-systemThemeQuery.addEventListener('change', applySystemTheme)
+applyThemePreference(getThemePreference())
+watchSystemTheme()
 
 const bootstrap = async () => {
   const app = createApp(App)

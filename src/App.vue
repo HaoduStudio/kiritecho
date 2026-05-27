@@ -2,7 +2,8 @@
   <t-config-provider :global-config="tdesignLocale">
     <WindowChrome />
     <SplashScreen v-if="setupStep === 'splash'" @start="showLanguageSetup" />
-    <LanguageSetup v-else />
+    <LanguageSetup v-else-if="setupStep === 'language'" @next="showThemeSetup" />
+    <ThemeSetup v-else-if="setupStep === 'theme'" @next="handleThemeNext" />
   </t-config-provider>
 </template>
 
@@ -15,6 +16,7 @@ import enUS from 'tdesign-vue-next/es/locale/en_US'
 import WindowChrome from './components/WindowChrome.vue'
 import SplashScreen from './views/SplashScreen.vue'
 import LanguageSetup from './views/LanguageSetup.vue'
+import ThemeSetup from './views/ThemeSetup.vue'
 
 const setupStep = ref('splash')
 const { locale } = useI18n()
@@ -30,4 +32,10 @@ const tdesignLocale = computed(() => tdesignLocales[locale.value] || zhCN)
 const showLanguageSetup = () => {
   setupStep.value = 'language'
 }
+
+const showThemeSetup = () => {
+  setupStep.value = 'theme'
+}
+
+const handleThemeNext = () => {}
 </script>
