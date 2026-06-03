@@ -647,6 +647,183 @@
   color: var(--td-error-color);
 }
 
+.account-confirm-card {
+  width: min(520px, 100%);
+  gap: 0;
+  min-height: 0;
+  padding: clamp(16px, 2.4vw, 22px) clamp(20px, 3vw, 28px);
+}
+
+.account-avatar.t-avatar {
+  flex: 0 0 auto;
+  color: var(--setup-text-primary);
+  background: var(--setup-card-active);
+  box-shadow: 0 16px 32px var(--setup-card-shadow);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.account-profile-summary {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  text-align: left;
+}
+
+.account-profile-copy {
+  min-width: 0;
+}
+
+.account-profile-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.account-profile-heading h2 {
+  min-width: 0;
+  margin: 0;
+  padding-bottom: 2px;
+  overflow: hidden;
+  color: var(--setup-text-primary);
+  font-size: clamp(22px, 2.45vw, 28px);
+  font-weight: 700;
+  line-height: 1.24;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-profile-heading .t-tag {
+  flex: 0 0 auto;
+  max-width: min(180px, 42vw);
+  border-radius: 999px;
+  padding-right: 13px;
+  padding-left: 13px;
+}
+
+.account-profile-heading .t-tag.t-size-l {
+  height: 32px;
+  line-height: 30px;
+}
+
+.account-profile-heading .t-tag__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-profile-copy p {
+  min-width: 0;
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--setup-text-secondary);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.shortcut-panel {
+  width: min(760px, 100%);
+  text-align: center;
+}
+
+.shortcut-options {
+  display: grid;
+  gap: 12px;
+  width: min(680px, 100%);
+  margin: clamp(28px, 5vh, 42px) auto 0;
+}
+
+.shortcut-option {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) minmax(184px, 0.42fr);
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  min-height: 88px;
+  padding: 16px;
+  border: 1px solid var(--setup-card-border);
+  border-radius: 8px;
+  background: var(--setup-card-bg);
+  box-shadow: 0 18px 42px var(--setup-card-shadow);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.shortcut-option:hover,
+.shortcut-option--capturing {
+  background: var(--setup-card-hover);
+  transform: translateY(-2px);
+}
+
+.shortcut-option--capturing {
+  border-color: var(--td-brand-color);
+  box-shadow: 0 22px 46px var(--setup-button-shadow);
+}
+
+.shortcut-option-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  color: var(--td-text-color-brand);
+  background: var(--setup-card-active);
+  font-size: 26px;
+}
+
+.shortcut-option-copy {
+  min-width: 0;
+  text-align: left;
+}
+
+.shortcut-option-copy h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--setup-text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.shortcut-option-copy p {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--setup-text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.shortcut-input.t-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.shortcut-input .t-input__inner {
+  font-weight: 700;
+  text-align: center;
+}
+
+.shortcut-status {
+  min-height: 22px;
+  margin: 14px 0 0;
+  color: var(--setup-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.shortcut-status--error {
+  color: var(--td-error-color);
+}
+
 .setup-footer {
   justify-content: flex-end;
   gap: 16px;
@@ -791,6 +968,39 @@
     min-height: 96px;
   }
 
+  .shortcut-option {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .shortcut-option-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .shortcut-input.t-input {
+    grid-column: 1 / -1;
+  }
+
+  .account-profile-summary {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .account-profile-heading {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .account-profile-heading h2 {
+    white-space: normal;
+  }
+
 }
 
 @media (max-height: 650px) and (min-width: 861px) {
@@ -818,6 +1028,10 @@
   }
 
   .theme-options.t-radio-group {
+    margin-top: 24px;
+  }
+
+  .shortcut-options {
     margin-top: 24px;
   }
 

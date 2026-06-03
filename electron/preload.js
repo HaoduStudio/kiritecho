@@ -11,6 +11,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
 
+  config: {
+    saveSetup: (payload) => ipcRenderer.invoke('config:save-setup', payload)
+  },
+
   // IPC 通信接口（预留）
   send: (channel, data) => {
     const validChannels = ['app:ready', 'app:minimize', 'app:close']

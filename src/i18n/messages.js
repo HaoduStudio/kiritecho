@@ -47,7 +47,36 @@ export const messages = {
       openFailed: '无法打开浏览器，请手动访问上方链接',
       copyCode: '复制设备授权码',
       copied: '授权码已复制',
-      copyFailed: '复制失败，请手动选择授权码'
+      copyFailed: '复制失败，请手动选择授权码',
+      confirmTitle: '这是否是您？',
+      confirmDescription: '登录账号畅享 Kiritecho 一站式服务体验',
+      loadingProfile: '正在读取账号信息...',
+      profileFailed: '无法读取账号信息，请重新登录后再试',
+      profileUnauthorized: '登录态已失效，请重新登录',
+      missingApiBaseUrl: '请先配置 VITE_KIRITECHO_API_BASE_URL',
+      nicknameLabel: '昵称',
+      planLabel: '会员计划',
+      emailLabel: '邮箱地址',
+      unnamedUser: '未命名用户',
+      noEmail: '未提供邮箱地址',
+      confirmNext: '是的，下一步',
+      relogin: '不是，重新登录'
+    },
+    shortcuts: {
+      shortTitle: '快捷键',
+      title: '设置常用快捷键',
+      description: '为截屏和保存摘录设置本地快捷键。',
+      screenshotLabel: '截屏',
+      screenshotDescription: '用于触发截屏摘录。',
+      saveExcerptLabel: '保存摘录',
+      saveExcerptDescription: '用于保存当前摘录。',
+      placeholder: '按下组合键',
+      capturing: '按下要使用的组合键',
+      ready: '快捷键将保存在本地配置中',
+      duplicate: '两个快捷键不能相同',
+      modifierRequired: '请使用包含 Ctrl、Alt、Shift 或 Meta 的组合键',
+      saved: '设置已保存',
+      saveFailed: '保存失败，请稍后重试'
     }
   },
   'zh-TW': {
@@ -98,7 +127,36 @@ export const messages = {
       openFailed: '無法打開瀏覽器，請手動造訪上方連結',
       copyCode: '複製裝置授權碼',
       copied: '授權碼已複製',
-      copyFailed: '複製失敗，請手動選擇授權碼'
+      copyFailed: '複製失敗，請手動選擇授權碼',
+      confirmTitle: '這是否是您？',
+      confirmDescription: '登入帳號暢享 Kiritecho 一站式服務體驗',
+      loadingProfile: '正在讀取帳號資訊...',
+      profileFailed: '無法讀取帳號資訊，請重新登入後再試',
+      profileUnauthorized: '登入狀態已失效，請重新登入',
+      missingApiBaseUrl: '請先配置 VITE_KIRITECHO_API_BASE_URL',
+      nicknameLabel: '暱稱',
+      planLabel: '會員方案',
+      emailLabel: '電子郵件地址',
+      unnamedUser: '未命名使用者',
+      noEmail: '未提供電子郵件地址',
+      confirmNext: '是的，下一步',
+      relogin: '不是，重新登入'
+    },
+    shortcuts: {
+      shortTitle: '快捷鍵',
+      title: '設定常用快捷鍵',
+      description: '為截圖和保存摘錄設定本機快捷鍵。',
+      screenshotLabel: '截圖',
+      screenshotDescription: '用於觸發截圖摘錄。',
+      saveExcerptLabel: '保存摘錄',
+      saveExcerptDescription: '用於保存目前摘錄。',
+      placeholder: '按下組合鍵',
+      capturing: '按下要使用的組合鍵',
+      ready: '快捷鍵將保存在本機配置中',
+      duplicate: '兩個快捷鍵不能相同',
+      modifierRequired: '請使用包含 Ctrl、Alt、Shift 或 Meta 的組合鍵',
+      saved: '設定已保存',
+      saveFailed: '保存失敗，請稍後重試'
     }
   },
   'en-US': {
@@ -149,7 +207,36 @@ export const messages = {
       openFailed: 'Unable to open the browser. Visit the link above manually.',
       copyCode: 'Copy device authorization code',
       copied: 'Authorization code copied',
-      copyFailed: 'Copy failed. Select the code manually.'
+      copyFailed: 'Copy failed. Select the code manually.',
+      confirmTitle: 'Is this you?',
+      confirmDescription: 'Sign in to enjoy the full Kiritecho service experience.',
+      loadingProfile: 'Loading account information...',
+      profileFailed: 'Unable to load account information. Sign in again and retry.',
+      profileUnauthorized: 'The sign-in state expired. Sign in again.',
+      missingApiBaseUrl: 'Configure VITE_KIRITECHO_API_BASE_URL first',
+      nicknameLabel: 'Nickname',
+      planLabel: 'Membership plan',
+      emailLabel: 'Email address',
+      unnamedUser: 'Unnamed user',
+      noEmail: 'No email address provided',
+      confirmNext: 'Yes, next',
+      relogin: 'No, sign in again'
+    },
+    shortcuts: {
+      shortTitle: 'Shortcuts',
+      title: 'Set common shortcuts',
+      description: 'Set local shortcuts for screenshots and saved excerpts.',
+      screenshotLabel: 'Screenshot',
+      screenshotDescription: 'Triggers screenshot capture.',
+      saveExcerptLabel: 'Save excerpt',
+      saveExcerptDescription: 'Saves the current excerpt.',
+      placeholder: 'Press keys',
+      capturing: 'Press the key combination to use',
+      ready: 'Shortcuts will be saved in local configuration',
+      duplicate: 'The two shortcuts cannot be the same',
+      modifierRequired: 'Use a shortcut with Ctrl, Alt, Shift, or Meta',
+      saved: 'Settings saved',
+      saveFailed: 'Save failed. Please try again later.'
     }
   }
 }

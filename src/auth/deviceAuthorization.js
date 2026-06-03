@@ -1,4 +1,5 @@
 const defaultBasePath = '/api/auth'
+const defaultApiBasePath = '/api/v1'
 const deviceGrantType = 'urn:ietf:params:oauth:grant-type:device_code'
 const authStorageKey = 'kiritecho.auth'
 
@@ -33,6 +34,29 @@ const getAuthBaseUrl = () => {
   }
 
   return `${webBaseUrl}${basePath.startsWith('/') ? basePath : `/${basePath}`}`
+}
+
+const appendBasePath = (baseUrl, basePath) => {
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
+  const normalizedBasePath = basePath.startsWith('/') ? basePath : `/${basePath}`
+
+  if (!normalizedBaseUrl) {
+    return ''
+  }
+
+  if (normalizedBaseUrl.endsWith(normalizedBasePath)) {
+    return normalizedBaseUrl
+  }
+
+  return `${normalizedBaseUrl}${normalizedBasePath}`
+}
+
+const getApiBaseUrl = () => {
+  const apiBaseUrl = normalizeBaseUrl(import.meta.env.VITE_KIRITECHO_API_BASE_URL)
+  const webBaseUrl = normalizeBaseUrl(import.meta.env.VITE_KIRITECHO_WEB_BASE_URL)
+  const basePath = import.meta.env.VITE_KIRITECHO_API_BASE_PATH || defaultApiBasePath
+
+  return appendBasePath(apiBaseUrl || webBaseUrl, basePath)
 }
 
 const getJson = async (response) => {
@@ -71,9 +95,55 @@ const requestAuth = async (path, body) => {
   return payload
 }
 
+const getAuthorizationHeader = (tokenData) => {
+  const accessToken = tokenData?.accessToken || tokenData?.access_token
+
+  if (!accessToken) {
+    return ''
+  }
+
+  const tokenType = tokenData?.tokenType || tokenData?.token_type || 'Bearer'
+
+  return `${tokenType} ${accessToken}`
+}
+
+const requestApi = async (path, tokenData) => {
+  const apiBaseUrl = getApiBaseUrl()
+  const authorization = getAuthorizationHeader(tokenData)
+
+  if (!apiBaseUrl) {
+    throw Object.assign(new Error('missing_api_base_url'), { code: 'missing_api_base_url' })
+  }
+
+  if (!authorization) {
+    throw Object.assign(new Error('missing_access_token'), { code: 'missing_access_token' })
+  }
+
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      authorization
+    },
+    credentials: 'include'
+  })
+  const payload = await getJson(response)
+
+  if (!response.ok || payload?.success === false) {
+    const error = new Error(payload?.error || payload?.message || response.statusText)
+    error.code = payload?.code || payload?.error || `http_${response.status}`
+    throw error
+  }
+
+  return payload?.data ?? payload
+}
+
 export const authConfig = {
   get authBaseUrl() {
     return getAuthBaseUrl()
+  },
+  get apiBaseUrl() {
+    return getApiBaseUrl()
   },
   get webBaseUrl() {
     return normalizeBaseUrl(import.meta.env.VITE_KIRITECHO_WEB_BASE_URL) || getWebOrigin(getAuthBaseUrl())
@@ -112,15 +182,33 @@ export const pollDeviceToken = (deviceCode) => requestAuth('/device/token', {
   client_id: authConfig.clientId
 })
 
+export const normalizeAuthToken = (tokenData) => ({
+  accessToken: tokenData?.access_token || tokenData?.accessToken || '',
+  refreshToken: tokenData?.refresh_token || tokenData?.refreshToken || '',
+  tokenType: tokenData?.token_type || tokenData?.tokenType || 'Bearer',
+  expiresIn: Number(tokenData?.expires_in ?? tokenData?.expiresIn) || null,
+  scope: tokenData?.scope || '',
+  savedAt: tokenData?.savedAt || new Date().toISOString()
+})
+
 export const saveAuthToken = (tokenData) => {
+  const authToken = normalizeAuthToken(tokenData)
+
   try {
-    localStorage.setItem(authStorageKey, JSON.stringify({
-      accessToken: tokenData.access_token,
-      tokenType: tokenData.token_type,
-      expiresIn: tokenData.expires_in,
-      savedAt: new Date().toISOString()
-    }))
+    localStorage.setItem(authStorageKey, JSON.stringify(authToken))
   } catch (error) {
     console.warn('Unable to persist auth token:', error)
   }
+
+  return authToken
 }
+
+export const clearAuthToken = () => {
+  try {
+    localStorage.removeItem(authStorageKey)
+  } catch (error) {
+    console.warn('Unable to clear auth token:', error)
+  }
+}
+
+export const fetchCurrentUser = (tokenData) => requestApi('/auth/me', tokenData)
