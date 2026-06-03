@@ -4,6 +4,7 @@
     <SplashScreen v-if="setupStep === 'splash'" @start="showLanguageSetup" />
     <LanguageSetup v-else-if="setupStep === 'language'" @back="showSplash" @next="showThemeSetup" />
     <ThemeSetup v-else-if="setupStep === 'theme'" @back="showLanguageSetup" @next="handleThemeNext" />
+    <AccountLogin v-else-if="setupStep === 'account'" @back="showThemeSetup" />
   </t-config-provider>
 </template>
 
@@ -17,6 +18,7 @@ import WindowChrome from './components/WindowChrome.vue'
 import SplashScreen from './views/SplashScreen.vue'
 import LanguageSetup from './views/LanguageSetup.vue'
 import ThemeSetup from './views/ThemeSetup.vue'
+import AccountLogin from './views/AccountLogin.vue'
 
 const setupStep = ref('splash')
 const { locale } = useI18n()
@@ -41,5 +43,7 @@ const showThemeSetup = () => {
   setupStep.value = 'theme'
 }
 
-const handleThemeNext = () => {}
+const handleThemeNext = () => {
+  setupStep.value = 'account'
+}
 </script>

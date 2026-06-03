@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const fs = require('fs')
 const path = require('path')
 
@@ -96,6 +96,24 @@ const registerWindowHandlers = () => {
   })
 }
 
+const registerExternalHandlers = () => {
+  ipcMain.handle('app:open-external', async (event, url) => {
+    try {
+      const parsedUrl = new URL(url)
+
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        return false
+      }
+
+      await shell.openExternal(parsedUrl.toString())
+      return true
+    } catch (error) {
+      console.warn('Unable to open external URL:', error)
+      return false
+    }
+  })
+}
+
 function createWindow () {
   const mainWindow = new BrowserWindow({
     width: 980,
@@ -133,6 +151,7 @@ function createWindow () {
 app.whenReady().then(() => {
   registerI18nHandlers()
   registerWindowHandlers()
+  registerExternalHandlers()
   createWindow()
 
   app.on('activate', () => {

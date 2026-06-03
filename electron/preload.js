@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     setLocale: (locale) => ipcRenderer.invoke('i18n:set-locale', locale)
   },
 
+  openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
+
   // IPC 通信接口（预留）
   send: (channel, data) => {
     const validChannels = ['app:ready', 'app:minimize', 'app:close']
