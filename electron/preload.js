@@ -1,7 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  // 平台信息
   platform: process.platform,
 
   i18n: {
@@ -15,9 +14,40 @@ contextBridge.exposeInMainWorld('electronAPI', {
     saveSetup: (payload) => ipcRenderer.invoke('config:save-setup', payload)
   },
 
-  // IPC 通信接口（预留）
+  shortcut: {
+    update: (shortcuts) => ipcRenderer.invoke('shortcut:update', shortcuts)
+  },
+
+  capture: {
+    on: (event, callback) => {
+      const validEvents = ['capture:screenshot', 'capture:save-excerpt']
+      const channel = validEvents.includes(event) ? event : `capture:${event}`
+
+      if (validEvents.includes(channel)) {
+        ipcRenderer.on(channel, (e, ...args) => callback(...args))
+      }
+    },
+    removeAllListeners: (event) => {
+      const validEvents = ['capture:screenshot', 'capture:save-excerpt']
+      const channel = validEvents.includes(event) ? event : `capture:${event}`
+
+      if (validEvents.includes(channel)) {
+        ipcRenderer.removeAllListeners(channel)
+      }
+    }
+  },
+
+  parse: {
+    file: (filePath) => ipcRenderer.invoke('parse:file', filePath)
+  },
+
+  fs: {
+    readTemp: (filePath) => ipcRenderer.invoke('fs:read-temp', filePath)
+  },
+
   send: (channel, data) => {
     const validChannels = ['app:ready', 'app:minimize', 'app:close']
+
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
     }
@@ -25,6 +55,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   on: (channel, callback) => {
     const validChannels = ['app:reply']
+
     if (validChannels.includes(channel)) {
       ipcRenderer.on(channel, (event, ...args) => callback(...args))
     }

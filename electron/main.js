@@ -7,6 +7,7 @@ const { registerWindowHandlers } = require('./ipc/window')
 const { registerExternalHandlers } = require('./ipc/external')
 const { registerCaptureHandlers, cleanupCapture } = require('./ipc/capture')
 const { registerParseHandlers } = require('./ipc/parse')
+const { registerFsHandlers } = require('./ipc/fs')
 
 const NODE_ENV = process.env.NODE_ENV || 'production'
 const isDev = NODE_ENV === 'development'
@@ -52,6 +53,7 @@ app.whenReady().then(() => {
   registerExternalHandlers()
   registerCaptureHandlers()
   registerParseHandlers()
+  registerFsHandlers()
   createWindow()
 
   app.on('activate', () => {
