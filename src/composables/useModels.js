@@ -23,7 +23,7 @@ export const useModels = () => {
   const error = ref(null)
 
   const availableModels = computed(() => (
-    models.value.filter((model) => model.enabled && model.supports_stream)
+    models.value.filter((model) => model.enabled)
   ))
 
   const selectedModel = computed(() => (

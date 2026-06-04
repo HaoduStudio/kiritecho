@@ -101,7 +101,7 @@ export const useChat = () => {
         role: message.role,
         content: message.content
       })),
-      stream: true,
+      stream: model.supports_stream !== false,
       max_tokens: options.maxTokens || model.max_tokens || 4096
     }
 
