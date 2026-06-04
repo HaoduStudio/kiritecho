@@ -5,22 +5,6 @@
         <p class="ask-eyebrow">{{ t('ask.eyebrow') }}</p>
         <h1>{{ t('ask.title') }}</h1>
       </div>
-      <t-select
-        v-if="modelOptions.length"
-        v-model="internalModelKey"
-        class="ask-model-select"
-        size="small"
-        :disabled="isInputDisabled || isLoadingModels"
-        :aria-label="t('ask.modelSelectLabel')"
-      >
-        <t-option
-          v-for="model in modelOptions"
-          :key="model.key"
-          :label="model.label"
-          :value="model.key"
-        />
-      </t-select>
-      <span v-else-if="isLoadingModels" class="ask-model-hint">{{ t('ask.loadingModels') }}</span>
     </header>
 
     <t-alert
@@ -67,7 +51,27 @@
       :loading="isStreaming"
       @send="handleSend"
       @stop="handleStop"
-    />
+    >
+      <template #footer-prefix>
+        <t-select
+          v-if="modelOptions.length"
+          v-model="internalModelKey"
+          class="ask-model-select"
+          size="small"
+          borderless
+          :disabled="isInputDisabled || isLoadingModels"
+          :aria-label="t('ask.modelSelectLabel')"
+        >
+          <t-option
+            v-for="model in modelOptions"
+            :key="model.key"
+            :label="model.label"
+            :value="model.key"
+          />
+        </t-select>
+        <span v-else-if="isLoadingModels" class="ask-model-hint">{{ t('ask.loadingModels') }}</span>
+      </template>
+    </ChatSender>
   </section>
 </template>
 

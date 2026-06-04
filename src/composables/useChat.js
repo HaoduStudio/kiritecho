@@ -15,6 +15,7 @@ export const useChat = () => {
         id: message.id,
         role: message.role,
         content: message.content,
+        reasoning: message.reasoning || '',
         status: 'complete',
         model: message.model,
         created_at: message.created_at
@@ -22,12 +23,26 @@ export const useChat = () => {
   )
 
   const chatListData = computed(() =>
-    messages.value.map((message) => ({
-      role: message.role,
-      name: message.role === 'user' ? undefined : 'Kiritecho',
-      content: [{ type: 'markdown', data: message.content }],
-      status: message.status || 'complete'
-    }))
+    messages.value.map((message) => {
+      const items = []
+
+      if (message.role === 'assistant' && message.reasoning) {
+        items.push({ type: 'reasoning', data: [{ type: 'text', data: message.reasoning }] })
+      }
+
+      if (message.role === 'user') {
+        items.push({ type: 'text', data: message.content })
+      } else {
+        items.push({ type: 'markdown', data: message.content })
+      }
+
+      return {
+        role: message.role,
+        name: message.role === 'user' ? undefined : 'Kiritecho',
+        content: items,
+        status: message.status || 'complete'
+      }
+    })
   )
 
   const setConversation = (id, existingMessages = []) => {
@@ -41,7 +56,7 @@ export const useChat = () => {
     isStreaming.value = true
     streamError.value = null
 
-    const assistantMessage = { role: 'assistant', content: '', status: 'pending' }
+    const assistantMessage = { role: 'assistant', content: '', reasoning: '', status: 'pending' }
     messages.value.push(assistantMessage)
     const messageIndex = messages.value.length - 1
 
@@ -54,9 +69,17 @@ export const useChat = () => {
             return
           }
 
-          const delta = event.data?.choices?.[0]?.delta?.content
-          if (delta) {
-            messages.value[messageIndex].content += delta
+          const delta = event.data?.choices?.[0]?.delta
+          const contentDelta = delta?.content
+          const reasoningDelta = delta?.reasoning_content
+
+          if (contentDelta) {
+            messages.value[messageIndex].content += contentDelta
+            messages.value[messageIndex].status = 'streaming'
+          }
+
+          if (reasoningDelta) {
+            messages.value[messageIndex].reasoning += reasoningDelta
             messages.value[messageIndex].status = 'streaming'
           }
         }, (meta) => {

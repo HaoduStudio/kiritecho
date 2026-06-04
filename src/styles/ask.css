@@ -28,13 +28,18 @@
 }
 
 .ask-model-select {
-  width: min(320px, 100%);
+  width: min(240px, 100%);
 }
 
 .ask-model-hint {
   color: var(--td-text-color-placeholder);
   font-size: 13px;
   white-space: nowrap;
+}
+
+.ask-chat-sender .t-chat-sender__button__sendbtn .t-chat-sender__button__default {
+  width: 32px;
+  height: 32px;
 }
 
 .ask-alert {
