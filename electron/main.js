@@ -5,6 +5,7 @@ const { registerI18nHandlers } = require('./ipc/i18n')
 const { registerConfigHandlers } = require('./ipc/config')
 const { registerWindowHandlers } = require('./ipc/window')
 const { registerExternalHandlers } = require('./ipc/external')
+const { registerCaptureHandlers, cleanupCapture } = require('./ipc/capture')
 
 const NODE_ENV = process.env.NODE_ENV || 'production'
 const isDev = NODE_ENV === 'development'
@@ -48,6 +49,7 @@ app.whenReady().then(() => {
   registerConfigHandlers()
   registerWindowHandlers()
   registerExternalHandlers()
+  registerCaptureHandlers()
   createWindow()
 
   app.on('activate', () => {
@@ -55,6 +57,10 @@ app.whenReady().then(() => {
       createWindow()
     }
   })
+})
+
+app.on('will-quit', () => {
+  cleanupCapture()
 })
 
 app.on('window-all-closed', () => {
