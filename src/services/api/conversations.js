@@ -12,9 +12,9 @@ export const fetchConversation = (id) =>
 export const deleteConversation = (id) =>
   apiClient.delete(`/conversations/${id}`)
 
-export const chatCompletions = (params, onEvent) => {
+export const chatCompletions = (params, onEvent, onMeta) => {
   if (params.stream) {
-    return apiClient.stream('/chat/completions', params, onEvent)
+    return apiClient.stream('/chat/completions', params, onEvent, onMeta)
   }
 
   return apiClient.post('/chat/completions', params)

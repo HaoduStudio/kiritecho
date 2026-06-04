@@ -17,6 +17,7 @@
   "author": "HikaruQwQ",
   "license": "ISC",
   "dependencies": {
+    "@tdesign-vue-next/chat": "^0.5.2",
     "electron-squirrel-startup": "^1.0.1",
     "mammoth": "^1.12.0",
     "node-html-parser": "^7.1.0",

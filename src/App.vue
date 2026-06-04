@@ -19,6 +19,12 @@
       @back="showAccountSetup"
       @next="handleShortcutNext"
     />
+    <MainLayout
+      v-else-if="setupStep === 'main'"
+      :auth="setupAuth"
+      :account="setupAccount"
+      @logout="handleLogout"
+    />
   </t-config-provider>
 </template>
 
@@ -34,6 +40,9 @@ import LanguageSetup from './views/LanguageSetup.vue'
 import ThemeSetup from './views/ThemeSetup.vue'
 import AccountLogin from './views/AccountLogin.vue'
 import ShortcutSetup from './views/ShortcutSetup.vue'
+import MainLayout from './views/MainLayout.vue'
+import { clearAuthToken } from './auth/deviceAuthorization'
+import { setAuthTokenGetter } from './services/api/apiClient'
 
 const setupStep = ref('splash')
 const setupAuth = ref(null)
@@ -71,15 +80,26 @@ const showAccountSetup = () => {
 const handleAccountAuthenticated = (payload) => {
   setupAuth.value = payload.auth
   setupAccount.value = payload.account
+  setAuthTokenGetter(() => setupAuth.value)
   setupStep.value = 'shortcuts'
 }
 
 const handleAccountRelogin = () => {
   setupAuth.value = null
   setupAccount.value = null
+  setAuthTokenGetter(null)
 }
 
 const handleShortcutNext = () => {
-  setupStep.value = 'shortcuts'
+  setAuthTokenGetter(() => setupAuth.value)
+  setupStep.value = 'main'
+}
+
+const handleLogout = () => {
+  clearAuthToken()
+  setAuthTokenGetter(null)
+  setupAuth.value = null
+  setupAccount.value = null
+  setupStep.value = 'splash'
 }
 </script>

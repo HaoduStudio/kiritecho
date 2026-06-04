@@ -125,7 +125,7 @@ export const apiClient = {
 
   delete: (path) => request('DELETE', path),
 
-  stream: async (path, body, onEvent) => {
+  stream: async (path, body, onEvent, onMeta) => {
     const baseUrl = getApiBaseUrl()
 
     if (!baseUrl) {
@@ -151,14 +151,19 @@ export const apiClient = {
 
     if (!response.ok) {
       const payload = await getJson(response)
-      const code = payload?.code || `http_${response.status}`
+      const code = payload?.code || payload?.error || `http_${response.status}`
 
       if (response.status === 401) {
-        throw makeApiError('auth_expired', payload?.message || 'Unauthorized')
+        throw makeApiError('auth_expired', payload?.error || payload?.message || 'Unauthorized')
       }
 
       throw makeApiError(code, payload?.error || payload?.message || response.statusText)
     }
+
+    onMeta?.({
+      conversationId: response.headers.get('X-Conversation-ID') || '',
+      traceId: response.headers.get('X-Trace-ID') || ''
+    })
 
     const reader = response.body.getReader()
     const decoder = new TextDecoder()

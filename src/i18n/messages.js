@@ -77,6 +77,40 @@ export const messages = {
       modifierRequired: '请使用包含 Ctrl、Alt、Shift 或 Meta 的组合键',
       saved: '设置已保存',
       saveFailed: '保存失败，请稍后重试'
+    },
+    main: {
+      navigation: '主导航',
+      ask: '提问',
+      settings: '设置'
+    },
+    ask: {
+      eyebrow: 'AI 对话',
+      title: '提问',
+      welcome: '有什么我能帮你的？',
+      welcomeDescription: '选择可用模型并输入问题，拾帖会把对话保存到你的云端会话中。',
+      inputPlaceholder: '输入你的问题...',
+      loadingModels: '正在加载可用模型...',
+      noModels: '当前账号没有可用模型，请确认订阅计划或稍后重试。',
+      noModelsShort: '暂无可用模型',
+      noModelsPlaceholder: '暂无可用模型，暂时无法发送',
+      modelsLoadFailed: '无法加载可用模型，请检查网络或登录状态。',
+      modelSelectLabel: '选择模型',
+      send: '发送',
+      userRole: '你',
+      assistantRole: 'Kiritecho',
+      systemRole: '系统',
+      messageListLabel: '聊天消息'
+    },
+    settings: {
+      eyebrow: '账户',
+      title: '设置',
+      plan: '当前计划',
+      freePlan: 'Free',
+      quotaBalance: '剩余额度',
+      usage5h: '5 小时用量',
+      usage7d: '7 天用量',
+      refreshProfile: '刷新账户',
+      logout: '退出登录'
     }
   },
   'zh-TW': {
@@ -157,6 +191,40 @@ export const messages = {
       modifierRequired: '請使用包含 Ctrl、Alt、Shift 或 Meta 的組合鍵',
       saved: '設定已保存',
       saveFailed: '保存失敗，請稍後重試'
+    },
+    main: {
+      navigation: '主導覽',
+      ask: '提問',
+      settings: '設定'
+    },
+    ask: {
+      eyebrow: 'AI 對話',
+      title: '提問',
+      welcome: '有什麼我能幫你的？',
+      welcomeDescription: '選擇可用模型並輸入問題，拾帖會把對話保存到你的雲端會話中。',
+      inputPlaceholder: '輸入你的問題...',
+      loadingModels: '正在載入可用模型...',
+      noModels: '目前帳號沒有可用模型，請確認訂閱方案或稍後重試。',
+      noModelsShort: '暫無可用模型',
+      noModelsPlaceholder: '暫無可用模型，暫時無法發送',
+      modelsLoadFailed: '無法載入可用模型，請檢查網路或登入狀態。',
+      modelSelectLabel: '選擇模型',
+      send: '發送',
+      userRole: '你',
+      assistantRole: 'Kiritecho',
+      systemRole: '系統',
+      messageListLabel: '聊天訊息'
+    },
+    settings: {
+      eyebrow: '帳戶',
+      title: '設定',
+      plan: '目前方案',
+      freePlan: 'Free',
+      quotaBalance: '剩餘額度',
+      usage5h: '5 小時用量',
+      usage7d: '7 天用量',
+      refreshProfile: '重新整理帳戶',
+      logout: '登出'
     }
   },
   'en-US': {
@@ -237,6 +305,40 @@ export const messages = {
       modifierRequired: 'Use a shortcut with Ctrl, Alt, Shift, or Meta',
       saved: 'Settings saved',
       saveFailed: 'Save failed. Please try again later.'
+    },
+    main: {
+      navigation: 'Main navigation',
+      ask: 'Ask',
+      settings: 'Settings'
+    },
+    ask: {
+      eyebrow: 'AI conversation',
+      title: 'Ask',
+      welcome: 'What can I help with?',
+      welcomeDescription: 'Choose an available model and ask a question. Kiritecho will save the conversation to your cloud history.',
+      inputPlaceholder: 'Type your question...',
+      loadingModels: 'Loading available models...',
+      noModels: 'This account has no available models. Check the subscription plan or try again later.',
+      noModelsShort: 'No models available',
+      noModelsPlaceholder: 'No available model, sending is disabled',
+      modelsLoadFailed: 'Unable to load available models. Check your network or sign-in state.',
+      modelSelectLabel: 'Choose model',
+      send: 'Send',
+      userRole: 'You',
+      assistantRole: 'Kiritecho',
+      systemRole: 'System',
+      messageListLabel: 'Chat messages'
+    },
+    settings: {
+      eyebrow: 'Account',
+      title: 'Settings',
+      plan: 'Current plan',
+      freePlan: 'Free',
+      quotaBalance: 'Quota balance',
+      usage5h: '5h usage',
+      usage7d: '7d usage',
+      refreshProfile: 'Refresh account',
+      logout: 'Log out'
     }
   }
 }
