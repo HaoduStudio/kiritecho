@@ -79,7 +79,6 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ChatList, ChatSender } from '@tdesign-vue-next/chat'
-import { createConversation } from '@/services/api/conversations'
 import { getApiErrorMessage } from '@/services/api/errors'
 import { getModelKey, useModels } from '@/composables/useModels'
 import { useChat } from '@/composables/useChat'
@@ -140,39 +139,17 @@ const inputPlaceholder = computed(() => {
   return t('ask.inputPlaceholder')
 })
 
-const getConversationTitle = (content) => {
-  const trimmed = content.trim().replace(/\s+/g, ' ')
-  return trimmed.length > 24 ? `${trimmed.slice(0, 24)}...` : trimmed
-}
-
-const ensureConversation = async (content) => {
-  if (conversationId.value) {
-    return
-  }
-
-  try {
-    const conversation = await createConversation(getConversationTitle(content))
-
-    if (conversation?.id) {
-      setConversation(conversation.id, messages.value)
-      emit('conversation-created', conversation.id)
-    }
-  } catch (error) {
-    console.warn('Unable to create conversation before chat completion:', error)
-  }
-}
-
 const handleSend = async (value) => {
   const content = typeof value === 'string' ? value : draft.value
   if (!content?.trim() || !selectedModel.value) {
     return
   }
 
+  const hadConversation = !!conversationId.value
   draft.value = ''
-  await ensureConversation(content)
   await sendUserMessage(content, selectedModel.value)
 
-  if (conversationId.value) {
+  if (!hadConversation && conversationId.value) {
     emit('conversation-created', conversationId.value)
   }
 }

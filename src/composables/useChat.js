@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { chatCompletions } from '@/services/api/conversations'
+import { chatMessages } from '@/services/api/conversations'
 
 export const useChat = () => {
   const messages = ref([])
@@ -52,60 +52,6 @@ export const useChat = () => {
     lastTraceId.value = ''
   }
 
-  const sendMessage = async (params) => {
-    isStreaming.value = true
-    streamError.value = null
-
-    const assistantMessage = { role: 'assistant', content: '', reasoning: '', status: 'pending' }
-    messages.value.push(assistantMessage)
-    const messageIndex = messages.value.length - 1
-
-    try {
-      if (params.stream !== false) {
-        await chatCompletions({ ...params, stream: true }, (event) => {
-          if (event.done) {
-            messages.value[messageIndex].status = 'complete'
-            isStreaming.value = false
-            return
-          }
-
-          const delta = event.data?.choices?.[0]?.delta
-          const contentDelta = delta?.content
-          const reasoningDelta = delta?.reasoning_content
-
-          if (contentDelta) {
-            messages.value[messageIndex].content += contentDelta
-            messages.value[messageIndex].status = 'streaming'
-          }
-
-          if (reasoningDelta) {
-            messages.value[messageIndex].reasoning += reasoningDelta
-            messages.value[messageIndex].status = 'streaming'
-          }
-        }, (meta) => {
-          if (meta?.conversationId) {
-            conversationId.value = meta.conversationId
-          }
-
-          if (meta?.traceId) {
-            lastTraceId.value = meta.traceId
-          }
-        })
-      } else {
-        const result = await chatCompletions({ ...params, stream: false })
-        const content = result?.choices?.[0]?.message?.content || ''
-        messages.value[messageIndex].content = content
-        messages.value[messageIndex].status = 'complete'
-        isStreaming.value = false
-      }
-    } catch (error) {
-      console.warn('Chat completion failed:', error)
-      messages.value[messageIndex].status = 'error'
-      streamError.value = error
-      isStreaming.value = false
-    }
-  }
-
   const sendUserMessage = async (content, model, options = {}) => {
     const trimmedContent = content.trim()
 
@@ -116,19 +62,76 @@ export const useChat = () => {
     const userMessage = { role: 'user', content: trimmedContent, status: 'complete' }
     messages.value.push(userMessage)
 
+    const assistantMessage = { role: 'assistant', content: '', reasoning: '', status: 'pending' }
+    messages.value.push(assistantMessage)
+    const assistantIndex = messages.value.length - 1
+
+    isStreaming.value = true
+    streamError.value = null
+
     const params = {
       conversation_id: conversationId.value || undefined,
       model: model.id,
       provider_id: model.provider_id,
-      messages: messages.value.map((message) => ({
-        role: message.role,
-        content: message.content
-      })),
+      prompt: trimmedContent,
       stream: model.supports_stream !== false,
       max_tokens: options.maxTokens || model.max_tokens || 4096
     }
 
-    await sendMessage(params)
+    try {
+      if (params.stream) {
+        await chatMessages(params, (event) => {
+          if (event.event === 'metadata') {
+            if (event.data?.conversation_id) {
+              conversationId.value = event.data.conversation_id
+            }
+            return
+          }
+
+          if (event.event === 'message') {
+            const chunk = event.data
+            if (chunk?.data) {
+              messages.value[assistantIndex].content += chunk.data
+              messages.value[assistantIndex].status = 'streaming'
+            }
+            return
+          }
+
+          if (event.event === 'done') {
+            messages.value[assistantIndex].status = 'complete'
+            isStreaming.value = false
+          }
+        }, (meta) => {
+          if (meta?.conversationId) {
+            conversationId.value = meta.conversationId
+          }
+          if (meta?.traceId) {
+            lastTraceId.value = meta.traceId
+          }
+        })
+
+        if (messages.value[assistantIndex].status !== 'complete') {
+          messages.value[assistantIndex].status = 'complete'
+          isStreaming.value = false
+        }
+      } else {
+        const result = await chatMessages(params)
+        const data = result?.data ?? result
+
+        if (data?.conversation?.id) {
+          conversationId.value = data.conversation.id
+        }
+
+        messages.value[assistantIndex].content = data?.content || ''
+        messages.value[assistantIndex].status = 'complete'
+        isStreaming.value = false
+      }
+    } catch (error) {
+      console.warn('Chat message failed:', error)
+      messages.value[assistantIndex].status = 'error'
+      streamError.value = error
+      isStreaming.value = false
+    }
   }
 
   const clearMessages = () => {
@@ -146,7 +149,6 @@ export const useChat = () => {
     streamError,
     lastTraceId,
     setConversation,
-    sendMessage,
     sendUserMessage,
     clearMessages
   }

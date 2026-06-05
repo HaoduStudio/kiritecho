@@ -123,6 +123,8 @@ export const apiClient = {
 
   put: (path, body) => request('PUT', path, { body }),
 
+  patch: (path, body) => request('PATCH', path, { body }),
+
   delete: (path) => request('DELETE', path),
 
   stream: async (path, body, onEvent, onMeta) => {
@@ -201,5 +203,90 @@ export const apiClient = {
     }
 
     onEvent({ done: true })
+  },
+
+  streamSSE: async (path, body, onEvent, onMeta) => {
+    const baseUrl = getApiBaseUrl()
+
+    if (!baseUrl) {
+      throw makeApiError('missing_api_base_url', 'API base URL is not configured')
+    }
+
+    const authorization = getAuthorizationHeader()
+    const headers = {
+      'content-type': 'application/json',
+      accept: 'text/event-stream'
+    }
+
+    if (authorization) {
+      headers.authorization = authorization
+    }
+
+    const response = await fetch(`${baseUrl}${path}`, {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify(body)
+    })
+
+    if (!response.ok) {
+      const payload = await getJson(response)
+      const code = payload?.code || payload?.error || `http_${response.status}`
+
+      if (response.status === 401) {
+        throw makeApiError('auth_expired', payload?.error || payload?.message || 'Unauthorized')
+      }
+
+      throw makeApiError(code, payload?.error || payload?.message || response.statusText)
+    }
+
+    onMeta?.({
+      conversationId: response.headers.get('X-Conversation-ID') || '',
+      traceId: response.headers.get('X-Trace-ID') || ''
+    })
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let currentEvent = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        const trimmed = line.trim()
+
+        if (!trimmed) {
+          currentEvent = ''
+          continue
+        }
+
+        if (trimmed.startsWith(':')) continue
+
+        if (trimmed.startsWith('event: ')) {
+          currentEvent = trimmed.slice(7).trim()
+          continue
+        }
+
+        if (trimmed.startsWith('data: ')) {
+          const raw = trimmed.slice(6)
+
+          try {
+            const data = JSON.parse(raw)
+            onEvent({ event: currentEvent || 'message', data })
+          } catch (error) {
+            console.warn('Unable to parse SSE data:', error)
+          }
+        }
+      }
+    }
+
+    onEvent({ event: 'done', data: null })
   }
 }
