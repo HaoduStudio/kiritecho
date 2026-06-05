@@ -1,92 +1,126 @@
 <template>
-  <section class="ask-page">
-    <header class="ask-header">
-      <div>
-        <p class="ask-eyebrow">{{ t('ask.eyebrow') }}</p>
-        <h1>{{ t('ask.title') }}</h1>
-      </div>
-    </header>
-
-    <t-alert
-      v-if="modelsError"
-      theme="error"
-      class="ask-alert"
-      :message="t('ask.modelsLoadFailed')"
-    />
-    <t-alert
-      v-else-if="!isLoadingModels && !hasAvailableModels"
-      theme="warning"
-      class="ask-alert"
-      :message="t('ask.noModels')"
-    />
-    <t-alert
-      v-if="localizedStreamError"
-      theme="error"
-      class="ask-alert"
-      :message="localizedStreamError"
-    />
-
-    <div v-if="!messages.length" class="ask-empty">
-      <h2>{{ t('ask.welcome') }}</h2>
-      <p>{{ t('ask.welcomeDescription') }}</p>
+  <div class="chat-wrap">
+    <div class="view-head">
+      <div class="eyebrow">{{ t('ask.eyebrow') }}</div>
+      <h2 class="view-title">{{ t('ask.title') }}</h2>
     </div>
-    <ChatList
-      v-else
-      class="ask-chat-list"
-      :data="chatListData"
-      :is-stream-load="isStreaming"
-      :text-loading="isStreaming"
-      layout="both"
-      :auto-scroll="true"
-      :show-scroll-button="true"
-      default-scroll-to="bottom"
-      animation="moving"
-    />
 
-    <ChatSender
-      v-model="draft"
-      class="ask-chat-sender"
-      :placeholder="inputPlaceholder"
-      :disabled="isInputDisabled"
-      :loading="isStreaming"
-      @send="handleSend"
-      @stop="handleStop"
-    >
-      <template #footer-prefix>
-        <t-select
-          v-if="modelOptions.length"
-          v-model="internalModelKey"
-          class="ask-model-select"
-          size="small"
-          borderless
-          :disabled="isInputDisabled || isLoadingModels"
-          :aria-label="t('ask.modelSelectLabel')"
-        >
-          <t-option
-            v-for="model in modelOptions"
-            :key="model.key"
-            :label="model.label"
-            :value="model.key"
-          />
-        </t-select>
-        <span v-else-if="isLoadingModels" class="ask-model-hint">{{ t('ask.loadingModels') }}</span>
-      </template>
-    </ChatSender>
-  </section>
+    <!-- Empty state -->
+    <div v-if="!messages.length" class="chat-empty">
+      <h1 class="ce-title">{{ t('ask.welcome') }}</h1>
+      <p class="ce-sub">{{ t('ask.welcomeDescription') }}</p>
+      <div class="ce-grid">
+        <button v-for="s in SUGGESTIONS" :key="s.t" class="ce-card" @click="handleSuggestion(s)">
+          <span class="ce-ico"><KtIcon :name="s.icon" :size="17" /></span>
+          <span style="display: flex; flex-direction: column; gap: 2px; text-align: left">
+            <span style="font-weight: 600; font-size: 14px; color: var(--ui-text-highlighted)">{{ s.t }}</span>
+            <span style="font-size: 12.5px; color: var(--ui-text-muted)">{{ s.d }}</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat messages -->
+    <div v-else ref="scrollRef" class="chat-scroll kt-scroll">
+      <div class="chat-thread">
+        <div v-for="(m, i) in messages" :key="i" :class="['msg', m.role === 'user' ? 'user' : 'ai']">
+          <template v-if="m.role === 'user'">
+            <div class="bubble user">{{ m.content }}</div>
+          </template>
+          <template v-else>
+            <span class="ai-ava"><KtIcon name="sparkles" :size="15" /></span>
+            <div style="min-width: 0">
+              <div class="ai-name">
+                {{ m.modelName || 'AI' }}
+                <span v-if="m.isStreaming" class="typing"><i /><i /><i /></span>
+              </div>
+              <div v-if="m.content" class="bubble ai">{{ m.content }}</div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composer -->
+    <div class="composer-dock">
+      <div :class="['composer', { big: !messages.length }]">
+        <textarea
+          v-model="draft"
+          class="u-textarea kt-scroll"
+          :rows="messages.length ? 1 : 3"
+          :placeholder="inputPlaceholder"
+          :disabled="isInputDisabled"
+          @keydown="handleComposerKeydown"
+        />
+        <div class="composer-bar">
+          <!-- Model selector -->
+          <div ref="modelRef" style="position: relative">
+            <button class="ms-trigger" @click="modelOpen = !modelOpen">
+              <span class="ms-dot" />
+              <span v-if="selectedModel" style="font-weight: 600; color: var(--ui-text-highlighted)">{{ selectedModelLabel }}</span>
+              <span v-else style="color: var(--ui-text-muted)">{{ t('ask.loadingModels') }}</span>
+              <KtIcon name="chevrons-up-down" :size="14" style="color: var(--ui-text-muted); margin-left: 2px" />
+            </button>
+            <div v-if="modelOpen" class="ms-menu" style="animation: kt-scale-in .12s ease both">
+              <button
+                v-for="m in modelOptions"
+                :key="m.key"
+                class="ms-item"
+                :data-active="m.key === selectedModelKey ? 'true' : undefined"
+                @click="selectModelKey(m.key); modelOpen = false"
+              >
+                <span class="ms-dot" />
+                <span style="display: flex; flex-direction: column; line-height: 1.3">
+                  <span style="font-weight: 600; color: var(--ui-text-highlighted)">{{ m.name }}</span>
+                  <span style="font-size: 11.5px; color: var(--ui-text-muted)">{{ m.vendor }}</span>
+                </span>
+                <KtIcon v-if="m.key === selectedModelKey" name="check" :size="16" style="color: var(--ui-primary); margin-left: auto" />
+              </button>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <button class="wc-icon" :title="t('ask.screenshot')"><KtIcon name="scissors" :size="16" /></button>
+            <button
+              class="u-btn"
+              data-variant="solid"
+              data-color="primary"
+              data-size="md"
+              data-square="true"
+              :disabled="!draft.trim() || isInputDisabled"
+              :title="t('ask.send')"
+              @click="handleSend(draft)"
+            >
+              <KtIcon name="arrow-up" :size="18" :stroke-width="2.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="composer-hint">{{ t('ask.composerHint') }}</p>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { ChatList, ChatSender } from '@tdesign-vue-next/chat'
-import { getApiErrorMessage } from '@/services/api/errors'
+import KtIcon from '@/components/KtIcon.vue'
 import { getModelKey, useModels } from '@/composables/useModels'
 import { useChat } from '@/composables/useChat'
 
 const emit = defineEmits(['conversation-created'])
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const draft = ref('')
+const modelOpen = ref(false)
+const modelRef = ref(null)
+const scrollRef = ref(null)
+
+const SUGGESTIONS = [
+  { icon: 'scissors', t: '截屏摘录', d: '框选屏幕，自动提炼要点' },
+  { icon: 'sparkles', t: '总结长文', d: '粘贴文章，输出结构化摘要' },
+  { icon: 'search', t: '资料问答', d: '基于你的摘录库提问' },
+  { icon: 'save', t: '整理笔记', d: '把零散内容归档成卡片' },
+]
 
 const {
   availableModels,
@@ -94,44 +128,30 @@ const {
   selectedModel,
   hasAvailableModels,
   isLoading: isLoadingModels,
-  error: modelsError,
   loadModels,
   selectModelKey
 } = useModels()
 
 const {
   messages,
-  chatListData,
   conversationId,
   isStreaming,
-  streamError,
-  setConversation,
   sendUserMessage
 } = useChat()
 
-const internalModelKey = computed({
-  get: () => selectedModelKey.value,
-  set: (value) => selectModelKey(value)
-})
-
 const modelOptions = computed(() => availableModels.value.map((model) => ({
   key: getModelKey(model),
+  name: model.name,
+  vendor: model.provider_name || '',
   label: model.provider_name ? `${model.name} · ${model.provider_name}` : model.name
 })))
 
-const localizedStreamError = computed(() => {
-  if (!streamError.value) {
-    return ''
-  }
-
-  return getApiErrorMessage(streamError.value.code, locale.value)
+const selectedModelLabel = computed(() => {
+  const m = modelOptions.value.find(o => o.key === selectedModelKey.value)
+  return m ? m.name : ''
 })
 
-const isInputDisabled = computed(() => (
-  isLoadingModels.value ||
-  isStreaming.value ||
-  !hasAvailableModels.value
-))
+const isInputDisabled = computed(() => isLoadingModels.value || isStreaming.value || !hasAvailableModels.value)
 
 const inputPlaceholder = computed(() => {
   if (isLoadingModels.value) return t('ask.loadingModels')
@@ -139,24 +159,30 @@ const inputPlaceholder = computed(() => {
   return t('ask.inputPlaceholder')
 })
 
+watch(messages, () => {
+  nextTick(() => { if (scrollRef.value) scrollRef.value.scrollTop = scrollRef.value.scrollHeight })
+}, { deep: true })
+
+const handleComposerKeydown = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(draft.value) }
+}
+
+const handleSuggestion = (s) => {
+  handleSend(s.t + '：' + s.d)
+}
+
 const handleSend = async (value) => {
   const content = typeof value === 'string' ? value : draft.value
-  if (!content?.trim() || !selectedModel.value) {
-    return
-  }
-
+  if (!content?.trim() || !selectedModel.value) return
   const hadConversation = !!conversationId.value
   draft.value = ''
   await sendUserMessage(content, selectedModel.value)
-
-  if (!hadConversation && conversationId.value) {
-    emit('conversation-created', conversationId.value)
-  }
+  if (!hadConversation && conversationId.value) emit('conversation-created', conversationId.value)
 }
 
-const handleStop = () => {
-  // TODO: implement abort when backend supports it
-}
-
-onMounted(loadModels)
+onMounted(() => {
+  loadModels()
+  const handleClickOutside = (e) => { if (modelRef.value && !modelRef.value.contains(e.target)) modelOpen.value = false }
+  document.addEventListener('mousedown', handleClickOutside)
+})
 </script>

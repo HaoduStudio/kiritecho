@@ -1,42 +1,140 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+:root {
+  --gold-50:  #fbf7ea;
+  --gold-100: #f5ecc9;
+  --gold-200: #ecd78f;
+  --gold-300: #e0bd55;
+  --gold-400: #d4a533;
+  --gold-500: #c69228;
+  --gold-600: #ab7a1e;
+  --gold-700: #885d1a;
+  --gold-800: #6f4b1c;
+  --gold-900: #5e401b;
+  --gold-950: #36230b;
+
+  --ink-50:  #f6f7f9;
+  --ink-100: #eceef2;
+  --ink-200: #d7dbe2;
+  --ink-300: #b4bbc8;
+  --ink-400: #8b94a6;
+  --ink-500: #6c7589;
+  --ink-600: #565d70;
+  --ink-700: #474c5c;
+  --ink-800: #30343f;
+  --ink-850: #23262f;
+  --ink-900: #181a21;
+  --ink-925: #121419;
+  --ink-950: #0c0d11;
+
+  --ui-radius: 0.5rem;
+  --ui-font: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ui-font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --ui-primary: var(--gold-500);
+  --ui-primary-soft: color-mix(in oklab, var(--gold-500) 12%, transparent);
+
+  color-scheme: light;
 }
 
-html,
-body,
-#app {
+:root[theme-mode="light"],
+.kt-light {
+  --ui-bg:            #ffffff;
+  --ui-bg-muted:      var(--ink-50);
+  --ui-bg-elevated:   var(--ink-100);
+  --ui-bg-accented:   var(--ink-200);
+  --ui-bg-inverted:   var(--ink-900);
+
+  --ui-border:          var(--ink-200);
+  --ui-border-muted:    var(--ink-100);
+  --ui-border-accented: var(--ink-300);
+
+  --ui-text-dimmed:      var(--ink-400);
+  --ui-text-muted:       var(--ink-500);
+  --ui-text-toned:       var(--ink-600);
+  --ui-text:             var(--ink-700);
+  --ui-text-highlighted: var(--ink-950);
+  --ui-text-inverted:    #ffffff;
+
+  --ui-primary: var(--gold-600);
+  --ui-primary-text-on: #ffffff;
+  --ui-primary-soft: color-mix(in oklab, var(--gold-500) 14%, white);
+  --ui-primary-elevated: var(--gold-700);
+
+  color-scheme: light;
+}
+
+:root[theme-mode="dark"],
+.kt-dark {
+  --ui-bg:            var(--ink-950);
+  --ui-bg-muted:      var(--ink-925);
+  --ui-bg-elevated:   var(--ink-900);
+  --ui-bg-accented:   var(--ink-850);
+  --ui-bg-inverted:   var(--ink-50);
+
+  --ui-border:          var(--ink-850);
+  --ui-border-muted:    var(--ink-900);
+  --ui-border-accented: var(--ink-700);
+
+  --ui-text-dimmed:      var(--ink-600);
+  --ui-text-muted:       var(--ink-400);
+  --ui-text-toned:       var(--ink-300);
+  --ui-text:             var(--ink-200);
+  --ui-text-highlighted: #ffffff;
+  --ui-text-inverted:    var(--ink-950);
+
+  --ui-primary: var(--gold-400);
+  --ui-primary-text-on: var(--ink-950);
+  --ui-primary-soft: color-mix(in oklab, var(--gold-400) 16%, transparent);
+  --ui-primary-elevated: var(--gold-300);
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #app {
   width: 100%;
   height: 100%;
+  font-family: var(--ui-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   overflow: hidden;
-  background: #ffffff;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'PingFang SC',
-    'Hiragino Sans GB',
-    'Microsoft YaHei',
-    'Helvetica Neue',
-    Helvetica,
-    Arial,
-    sans-serif;
+  background: var(--ui-bg);
+  color: var(--ui-text);
 }
 
-html[theme-mode="light"] body {
-  background: #ffffff;
-}
+::selection { background: color-mix(in oklab, var(--ui-primary) 30%, transparent); }
 
-html[theme-mode="dark"] body {
-  background: #0d0f0e;
-}
+button { font-family: inherit; }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #0d0f0e;
-  }
+.kt-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.kt-scroll::-webkit-scrollbar-thumb {
+  background: var(--ui-border-accented);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
 }
+.kt-scroll::-webkit-scrollbar-thumb:hover { background: var(--ui-text-dimmed); background-clip: padding-box; border: 3px solid transparent; }
+.kt-scroll::-webkit-scrollbar-track { background: transparent; }
+
+@keyframes kt-fade-up {
+  from { transform: translateY(10px); }
+  to   { transform: translateY(0); }
+}
+@keyframes kt-fade {
+  from { transform: translateY(6px); }
+  to   { transform: translateY(0); }
+}
+@keyframes kt-scale-in {
+  from { transform: scale(.96); }
+  to   { transform: scale(1); }
+}
+@keyframes kt-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+@keyframes kt-spin { to { transform: rotate(360deg); } }

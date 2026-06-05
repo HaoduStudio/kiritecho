@@ -1,109 +1,83 @@
 <template>
-  <div class="setup-container">
-    <div class="setup-background">
-      <div class="setup-grid" />
-      <div class="setup-sheen" />
-    </div>
-
-    <div class="setup-shell">
-      <header class="setup-header">
-        <span class="setup-brand">{{ t('setup.brand') }}</span>
-      </header>
-
-      <main class="setup-content setup-content--compact" aria-labelledby="shortcut-title">
-        <section class="setup-panel shortcut-panel">
-          <p class="setup-eyebrow">{{ t('shortcuts.shortTitle') }}</p>
-          <h1 id="shortcut-title" class="setup-title">{{ t('shortcuts.title') }}</h1>
-          <p class="setup-description">{{ t('shortcuts.description') }}</p>
-
-          <div class="shortcut-options">
-            <section
-              :class="['shortcut-option', { 'shortcut-option--capturing': capturingShortcut === 'screenshot' }]"
-              :aria-labelledby="screenshotTitleId"
+  <div class="ob-shell" style="animation: kt-fade .35s ease both">
+    <div class="ob-body">
+      <div class="ob-head">
+        <div class="eyebrow">{{ t('shortcuts.shortTitle') }}</div>
+        <h1 class="ob-title">{{ t('shortcuts.title') }}</h1>
+        <p class="ob-sub">{{ t('shortcuts.description') }}</p>
+      </div>
+      <div class="ob-content">
+        <div class="ob-list" style="max-width: 720px">
+          <div class="hk-row">
+            <span class="hk-ico"><KtIcon name="scissors" :size="20" /></span>
+            <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+              <span style="font-weight: 700; font-size: 15.5px; color: var(--ui-text-highlighted)">{{ t('shortcuts.screenshotLabel') }}</span>
+              <span style="font-size: 13px; color: var(--ui-text-muted)">{{ t('shortcuts.screenshotDescription') }}</span>
+            </div>
+            <button
+              :class="['hk-keys', { rec: capturingShortcut === 'screenshot' }]"
+              @click="handleShortcutFocus('screenshot')"
+              @keydown="(e) => handleShortcutKeydown('screenshot', e)"
+              @blur="handleShortcutBlur"
             >
-              <span class="shortcut-option-icon" aria-hidden="true">
-                <ScreenshotIcon />
-              </span>
-              <div class="shortcut-option-copy">
-                <h2 :id="screenshotTitleId">{{ t('shortcuts.screenshotLabel') }}</h2>
-                <p>{{ t('shortcuts.screenshotDescription') }}</p>
-              </div>
-              <t-input
-                v-model="screenshotShortcut"
-                class="shortcut-input"
-                size="large"
-                readonly
-                :aria-label="t('shortcuts.screenshotLabel')"
-                :placeholder="t('shortcuts.placeholder')"
-                :spell-check="false"
-                :status="shortcutInputStatus"
-                @focus="handleShortcutFocus('screenshot')"
-                @blur="handleShortcutBlur"
-                @keydown="(value, context) => handleShortcutKeydown('screenshot', value, context)"
-              />
-            </section>
-
-            <section
-              :class="['shortcut-option', { 'shortcut-option--capturing': capturingShortcut === 'saveExcerpt' }]"
-              :aria-labelledby="saveExcerptTitleId"
-            >
-              <span class="shortcut-option-icon" aria-hidden="true">
-                <SaveIcon />
-              </span>
-              <div class="shortcut-option-copy">
-                <h2 :id="saveExcerptTitleId">{{ t('shortcuts.saveExcerptLabel') }}</h2>
-                <p>{{ t('shortcuts.saveExcerptDescription') }}</p>
-              </div>
-              <t-input
-                v-model="saveExcerptShortcut"
-                class="shortcut-input"
-                size="large"
-                readonly
-                :aria-label="t('shortcuts.saveExcerptLabel')"
-                :placeholder="t('shortcuts.placeholder')"
-                :spell-check="false"
-                :status="shortcutInputStatus"
-                @focus="handleShortcutFocus('saveExcerpt')"
-                @blur="handleShortcutBlur"
-                @keydown="(value, context) => handleShortcutKeydown('saveExcerpt', value, context)"
-              />
-            </section>
+              <template v-if="capturingShortcut === 'screenshot'">
+                <span style="color: var(--ui-primary); font-weight: 600; font-size: 13px">{{ t('shortcuts.capturing') }}</span>
+              </template>
+              <template v-else>
+                <template v-for="(k, i) in screenshotKeys" :key="i">
+                  <span v-if="i > 0" class="hk-plus">+</span>
+                  <kbd class="u-kbd">{{ k }}</kbd>
+                </template>
+              </template>
+            </button>
           </div>
 
-          <p :class="['shortcut-status', { 'shortcut-status--error': hasShortcutError }]">
-            {{ shortcutStatusText }}
-          </p>
-        </section>
-      </main>
+          <div class="hk-row">
+            <span class="hk-ico"><KtIcon name="save" :size="20" /></span>
+            <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+              <span style="font-weight: 700; font-size: 15.5px; color: var(--ui-text-highlighted)">{{ t('shortcuts.saveExcerptLabel') }}</span>
+              <span style="font-size: 13px; color: var(--ui-text-muted)">{{ t('shortcuts.saveExcerptDescription') }}</span>
+            </div>
+            <button
+              :class="['hk-keys', { rec: capturingShortcut === 'saveExcerpt' }]"
+              @click="handleShortcutFocus('saveExcerpt')"
+              @keydown="(e) => handleShortcutKeydown('saveExcerpt', e)"
+              @blur="handleShortcutBlur"
+            >
+              <template v-if="capturingShortcut === 'saveExcerpt'">
+                <span style="color: var(--ui-primary); font-weight: 600; font-size: 13px">{{ t('shortcuts.capturing') }}</span>
+              </template>
+              <template v-else>
+                <template v-for="(k, i) in saveExcerptKeys" :key="i">
+                  <span v-if="i > 0" class="hk-plus">+</span>
+                  <kbd class="u-kbd">{{ k }}</kbd>
+                </template>
+              </template>
+            </button>
+          </div>
 
-      <footer class="setup-footer">
-        <t-button
-          theme="default"
-          size="large"
-          class="start-btn setup-back-btn"
-          :disabled="isSaving"
-          @click="handleBack"
-        >
-          <template #prefix>
-            <ArrowLeftIcon />
-          </template>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; color: var(--ui-text-dimmed); font-size: 12.5px">
+            <KtIcon name="lock" :size="13" /> {{ t('shortcuts.ready') }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-footer">
+      <div style="width: 180px; max-width: 30%">
+        <div class="u-stepper">
+          <span v-for="i in stepCount" :key="i" class="u-step-dot" :data-state="i - 1 < stepIndex ? 'done' : i - 1 === stepIndex ? 'active' : 'todo'" />
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <button class="u-btn" data-variant="subtle" data-color="neutral" data-size="lg" :disabled="isSaving" @click="handleBack">
+          <KtIcon name="arrow-left" :size="17" />
           {{ t('setup.back') }}
-        </t-button>
-
-        <t-button
-          theme="primary"
-          size="large"
-          class="start-btn setup-next-btn"
-          :disabled="!canSave"
-          :loading="isSaving"
-          @click="handleNext"
-        >
-          {{ t('setup.next') }}
-          <template #suffix>
-            <ArrowRightIcon />
-          </template>
-        </t-button>
-      </footer>
+        </button>
+        <button class="u-btn" data-variant="solid" data-color="primary" data-size="lg" :disabled="!canSave" @click="handleNext">
+          {{ t('shortcuts.finish') }}
+          <KtIcon name="check" :size="17" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -111,188 +85,76 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { MessagePlugin } from 'tdesign-vue-next/es/message'
-import ArrowLeftIcon from 'tdesign-icons-vue-next/esm/components/arrow-left.js'
-import ArrowRightIcon from 'tdesign-icons-vue-next/esm/components/arrow-right.js'
-import SaveIcon from 'tdesign-icons-vue-next/esm/components/save.js'
-import ScreenshotIcon from 'tdesign-icons-vue-next/esm/components/screenshot.js'
+import KtIcon from '@/components/KtIcon.vue'
 import { saveSetupConfig } from '@/config/setupConfig'
 
 const props = defineProps({
-  auth: {
-    type: Object,
-    default: null
-  },
-  account: {
-    type: Object,
-    default: null
-  }
+  auth: { type: Object, default: null },
+  account: { type: Object, default: null }
 })
 
 const emit = defineEmits(['back', 'next'])
 const { t } = useI18n()
 
-const screenshotTitleId = 'shortcut-screenshot-title'
-const saveExcerptTitleId = 'shortcut-save-excerpt-title'
+const stepIndex = 4
+const stepCount = 5
+
 const screenshotShortcut = ref('Ctrl+Alt+S')
 const saveExcerptShortcut = ref('Ctrl+Alt+E')
 const capturingShortcut = ref('')
 const isSaving = ref(false)
-const lastInvalidReason = ref('')
+
+const screenshotKeys = computed(() => screenshotShortcut.value.split('+'))
+const saveExcerptKeys = computed(() => saveExcerptShortcut.value.split('+'))
 
 const modifierKeys = new Set(['Control', 'Shift', 'Alt', 'Meta'])
 const standaloneKeys = new Set(['PrintScreen'])
-const keyAliases = {
-  ' ': 'Space',
-  Spacebar: 'Space',
-  Escape: 'Esc',
-  ArrowUp: 'Up',
-  ArrowDown: 'Down',
-  ArrowLeft: 'Left',
-  ArrowRight: 'Right'
-}
+const keyAliases = { ' ': 'Space', Spacebar: 'Space', Escape: 'Esc', ArrowUp: 'Up', ArrowDown: 'Down', ArrowLeft: 'Left', ArrowRight: 'Right' }
 
-const normalizedScreenshotShortcut = computed(() => screenshotShortcut.value.trim().toLowerCase())
-const normalizedSaveExcerptShortcut = computed(() => saveExcerptShortcut.value.trim().toLowerCase())
-
-const isShortcutDuplicate = computed(() => (
-  normalizedScreenshotShortcut.value &&
-  normalizedScreenshotShortcut.value === normalizedSaveExcerptShortcut.value
-))
-
-const hasShortcutError = computed(() => Boolean(isShortcutDuplicate.value || lastInvalidReason.value))
-
-const shortcutInputStatus = computed(() => (hasShortcutError.value ? 'error' : 'default'))
-
-const shortcutStatusText = computed(() => {
-  if (isShortcutDuplicate.value) return t('shortcuts.duplicate')
-  if (lastInvalidReason.value === 'modifier') return t('shortcuts.modifierRequired')
-  if (capturingShortcut.value) return t('shortcuts.capturing')
-
-  return t('shortcuts.ready')
-})
-
-const canSave = computed(() => (
-  Boolean(props.auth?.accessToken) &&
-  Boolean(screenshotShortcut.value) &&
-  Boolean(saveExcerptShortcut.value) &&
-  !isShortcutDuplicate.value
-))
+const canSave = computed(() => Boolean(props.auth?.accessToken) && Boolean(screenshotShortcut.value) && Boolean(saveExcerptShortcut.value))
 
 const getKeyLabel = (event) => {
   const key = event.key
-
-  if (!key || modifierKeys.has(key)) {
-    return ''
-  }
-
-  if (keyAliases[key]) {
-    return keyAliases[key]
-  }
-
-  if (key.length === 1) {
-    return key.toUpperCase()
-  }
-
+  if (!key || modifierKeys.has(key)) return ''
+  if (keyAliases[key]) return keyAliases[key]
+  if (key.length === 1) return key.toUpperCase()
   return key
 }
 
 const getShortcutFromEvent = (event) => {
   const keyLabel = getKeyLabel(event)
-
-  if (!keyLabel) {
-    return ''
-  }
-
+  if (!keyLabel) return ''
   const parts = []
   if (event.ctrlKey) parts.push('Ctrl')
   if (event.altKey) parts.push('Alt')
   if (event.shiftKey) parts.push('Shift')
   if (event.metaKey) parts.push('Meta')
-
-  if (!parts.length && !standaloneKeys.has(keyLabel) && !/^F\d{1,2}$/.test(keyLabel)) {
-    lastInvalidReason.value = 'modifier'
-    return ''
-  }
-
-  lastInvalidReason.value = ''
-
+  if (!parts.length && !standaloneKeys.has(keyLabel) && !/^F\d{1,2}$/.test(keyLabel)) return ''
   return [...parts, keyLabel].join('+')
 }
 
-const getKeyboardEvent = (value, context) => context?.e || value?.e || value
+const handleShortcutFocus = (target) => { capturingShortcut.value = target }
+const handleShortcutBlur = () => { capturingShortcut.value = '' }
 
-const handleShortcutFocus = (target) => {
-  capturingShortcut.value = target
-  lastInvalidReason.value = ''
-}
-
-const handleShortcutBlur = () => {
-  capturingShortcut.value = ''
-}
-
-const handleShortcutKeydown = (target, value, context) => {
-  const event = getKeyboardEvent(value, context)
-
-  if (!event?.key) {
-    return
-  }
-
-  event.preventDefault()
-  event.stopPropagation()
-
-  if (event.key === 'Escape') {
-    capturingShortcut.value = ''
-    lastInvalidReason.value = ''
-    return
-  }
-
+const handleShortcutKeydown = (target, event) => {
+  if (!event?.key) return
+  event.preventDefault(); event.stopPropagation()
+  if (event.key === 'Escape') { capturingShortcut.value = ''; return }
   const shortcut = getShortcutFromEvent(event)
-
-  if (!shortcut) {
-    return
-  }
-
-  if (target === 'screenshot') {
-    screenshotShortcut.value = shortcut
-  } else {
-    saveExcerptShortcut.value = shortcut
-  }
+  if (!shortcut) return
+  if (target === 'screenshot') screenshotShortcut.value = shortcut
+  else saveExcerptShortcut.value = shortcut
 }
 
-const handleBack = () => {
-  emit('back')
-}
+const handleBack = () => emit('back')
 
 const handleNext = async () => {
-  if (!canSave.value) {
-    return
-  }
-
+  if (!canSave.value) return
   isSaving.value = true
-
   try {
-    await saveSetupConfig({
-      auth: props.auth,
-      account: props.account,
-      shortcuts: {
-        screenshot: screenshotShortcut.value,
-        saveExcerpt: saveExcerptShortcut.value
-      }
-    })
-    MessagePlugin.success({
-      content: t('shortcuts.saved'),
-      duration: 1800
-    })
+    await saveSetupConfig({ auth: props.auth, account: props.account, shortcuts: { screenshot: screenshotShortcut.value, saveExcerpt: saveExcerptShortcut.value } })
     emit('next')
-  } catch (error) {
-    console.warn('Unable to save setup shortcuts:', error)
-    MessagePlugin.error({
-      content: t('shortcuts.saveFailed'),
-      duration: 2200
-    })
-  } finally {
-    isSaving.value = false
-  }
+  } catch (error) { console.warn('Unable to save setup shortcuts:', error) }
+  finally { isSaving.value = false }
 }
 </script>

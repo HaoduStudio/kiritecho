@@ -1,50 +1,37 @@
-.window-chrome {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 20;
-  height: 42px;
-  pointer-events: none;
-}
-
-.window-drag-region {
-  position: absolute;
-  inset: 0;
-  -webkit-app-region: drag;
-}
-
-.window-controls {
-  position: absolute;
-  top: 8px;
-  right: 10px;
+/* window chrome */
+.kt-titlebar {
+  height: 46px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
-  pointer-events: auto;
-  -webkit-app-region: no-drag;
+  justify-content: space-between;
+  padding-left: 18px;
+  background: var(--ui-bg);
+  border-bottom: 1px solid var(--ui-border-muted);
+  -webkit-app-region: drag;
+  position: relative;
+  z-index: 20;
 }
 
-.window-control-btn.t-button {
-  width: 34px;
-  height: 28px;
-  border-radius: 6px !important;
-  color: var(--td-text-color-secondary);
-  transition:
-    color 160ms ease,
-    background 160ms ease;
+/* windows controls */
+.wc-win {
+  width: 46px; height: 46px;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--ui-text-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background-color .12s, color .12s;
+  font-family: inherit;
 }
+.wc-win:hover { background: var(--ui-bg-elevated); color: var(--ui-text-highlighted); }
+.wc-win-close:hover { background: #e81123; color: #fff; }
 
-.window-control-btn.t-button:hover {
-  color: var(--td-text-color-primary);
-  background: var(--td-bg-color-component-hover);
+/* generic icon button in titlebar */
+.wc-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--ui-text-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background-color .12s, color .12s;
+  font-family: inherit;
 }
-
-.window-control-btn--close.t-button:hover {
-  color: #fff;
-  background: var(--td-error-color-6);
-}
-
-.window-control-btn .t-icon {
-  font-size: 17px;
-}
+.wc-icon:hover { background: var(--ui-bg-elevated); color: var(--ui-text-highlighted); }

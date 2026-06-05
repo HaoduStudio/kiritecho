@@ -1,39 +1,37 @@
 <template>
-  <t-config-provider :global-config="tdesignLocale">
-    <WindowChrome />
-    <SplashScreen v-if="setupStep === 'splash'" @start="showLanguageSetup" />
-    <LanguageSetup v-else-if="setupStep === 'language'" @back="showSplash" @next="showThemeSetup" />
-    <ThemeSetup v-else-if="setupStep === 'theme'" @back="showLanguageSetup" @next="handleThemeNext" />
-    <AccountLogin
-      v-else-if="setupStep === 'account'"
-      :initial-auth="setupAuth"
-      :initial-account="setupAccount"
-      @back="showThemeSetup"
-      @authenticated="handleAccountAuthenticated"
-      @relogin="handleAccountRelogin"
-    />
-    <ShortcutSetup
-      v-else-if="setupStep === 'shortcuts'"
-      :auth="setupAuth"
-      :account="setupAccount"
-      @back="showAccountSetup"
-      @next="handleShortcutNext"
-    />
-    <MainLayout
-      v-else-if="setupStep === 'main'"
-      :auth="setupAuth"
-      :account="setupAccount"
-      @logout="handleLogout"
-    />
-  </t-config-provider>
+  <div style="display: flex; flex-direction: column; height: 100%">
+    <WindowChrome :show-brand="setupStep !== 'main'" />
+    <div class="kt-scroll" style="flex: 1; min-height: 0; overflow: auto; position: relative">
+      <SplashScreen v-if="setupStep === 'splash'" @start="showLanguageSetup" />
+      <LanguageSetup v-else-if="setupStep === 'language'" @back="showSplash" @next="showThemeSetup" />
+      <ThemeSetup v-else-if="setupStep === 'theme'" @back="showLanguageSetup" @next="handleThemeNext" />
+      <AccountLogin
+        v-else-if="setupStep === 'account'"
+        :initial-auth="setupAuth"
+        :initial-account="setupAccount"
+        @back="showThemeSetup"
+        @authenticated="handleAccountAuthenticated"
+        @relogin="handleAccountRelogin"
+      />
+      <ShortcutSetup
+        v-else-if="setupStep === 'shortcuts'"
+        :auth="setupAuth"
+        :account="setupAccount"
+        @back="showAccountSetup"
+        @next="handleShortcutNext"
+      />
+      <MainLayout
+        v-else-if="setupStep === 'main'"
+        :auth="setupAuth"
+        :account="setupAccount"
+        @logout="handleLogout"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import zhCN from 'tdesign-vue-next/es/locale/zh_CN'
-import zhTW from 'tdesign-vue-next/es/locale/zh_TW'
-import enUS from 'tdesign-vue-next/es/locale/en_US'
+import { ref } from 'vue'
 import WindowChrome from './components/WindowChrome.vue'
 import SplashScreen from './views/SplashScreen.vue'
 import LanguageSetup from './views/LanguageSetup.vue'
@@ -47,35 +45,12 @@ import { setAuthTokenGetter } from './services/api/apiClient'
 const setupStep = ref('splash')
 const setupAuth = ref(null)
 const setupAccount = ref(null)
-const { locale } = useI18n()
 
-const tdesignLocales = {
-  'zh-CN': zhCN,
-  'zh-TW': zhTW,
-  'en-US': enUS
-}
-
-const tdesignLocale = computed(() => tdesignLocales[locale.value] || zhCN)
-
-const showSplash = () => {
-  setupStep.value = 'splash'
-}
-
-const showLanguageSetup = () => {
-  setupStep.value = 'language'
-}
-
-const showThemeSetup = () => {
-  setupStep.value = 'theme'
-}
-
-const handleThemeNext = () => {
-  setupStep.value = 'account'
-}
-
-const showAccountSetup = () => {
-  setupStep.value = 'account'
-}
+const showSplash = () => { setupStep.value = 'splash' }
+const showLanguageSetup = () => { setupStep.value = 'language' }
+const showThemeSetup = () => { setupStep.value = 'theme' }
+const handleThemeNext = () => { setupStep.value = 'account' }
+const showAccountSetup = () => { setupStep.value = 'account' }
 
 const handleAccountAuthenticated = (payload) => {
   setupAuth.value = payload.auth

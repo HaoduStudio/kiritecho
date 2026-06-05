@@ -1,152 +1,115 @@
 <template>
-  <div class="setup-container">
-    <div class="setup-background">
-      <div class="setup-grid" />
-      <div class="setup-sheen" />
-    </div>
-
-    <div class="setup-shell">
-      <header class="setup-header">
-        <span class="setup-brand">{{ t('setup.brand') }}</span>
-      </header>
-
-      <main class="setup-content setup-content--compact" :aria-labelledby="accountTitleId">
-        <section class="setup-panel setup-panel--narrow account-panel">
-          <p class="setup-eyebrow">{{ t('account.shortTitle') }}</p>
-          <h1 :id="accountTitleId" class="setup-title">{{ titleText }}</h1>
-          <p class="setup-description">{{ descriptionText }}</p>
-
-          <div v-if="accountStage === 'device'" class="account-device-card" aria-live="polite">
-            <div v-if="isLoading" class="account-device-loading">
-              <span class="account-pulse" aria-hidden="true" />
+  <div class="ob-shell" style="animation: kt-fade .35s ease both">
+    <div class="ob-body" :style="accountStage === 'confirm' ? { alignItems: 'center', textAlign: 'center' } : {}">
+      <div class="ob-head" :style="accountStage === 'confirm' ? { alignItems: 'center' } : {}">
+        <div class="eyebrow">{{ t('account.shortTitle') }}</div>
+        <h1 class="ob-title">{{ titleText }}</h1>
+        <p class="ob-sub">{{ descriptionText }}</p>
+      </div>
+      <div class="ob-content" :style="accountStage === 'confirm' ? { display: 'flex', justifyContent: 'center', alignItems: 'center' } : {}">
+        <!-- Device code screen -->
+        <div v-if="accountStage === 'device'" style="display: flex; justify-content: center">
+          <div class="u-card" style="width: min(560px, 100%); padding: 32px 28px; text-align: center; background: var(--ui-bg-muted)">
+            <div v-if="isLoading" style="display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 160px; color: var(--ui-text-muted); font-size: 16px">
+              <KtIcon name="loader" :size="14" class-name="u-spinner" />
               <span>{{ t('account.requesting') }}</span>
             </div>
 
             <template v-else-if="deviceCode">
-              <p class="account-code-label">{{ t('account.codeLabel') }}</p>
-              <div
-                class="account-code"
-                role="button"
-                tabindex="0"
-                :aria-label="t('account.copyCode')"
-                @click="handleCopyCode"
-                @keydown.enter.prevent="handleCopyCode"
-                @keydown.space.prevent="handleCopyCode"
-              >
-                {{ formattedUserCode }}
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ui-text-muted); margin-bottom: 18px">
+                {{ t('account.codeLabel') }}
               </div>
-              <p class="account-verify-url">{{ verificationUrlText }}</p>
-              <p :class="['account-status', `account-status--${statusTone}`]">
-                <span class="account-status-dot" aria-hidden="true" />
-                {{ statusText }}
-              </p>
+              <div class="dl-code-wrap">
+                <button class="dl-code-button" type="button" :aria-label="t('account.copyCode')" @click="handleCopyCode">
+                  {{ displayedUserCode }}
+                </button>
+              </div>
+              <div v-if="copyFeedback" :class="['u-alert', copyFeedbackKind]" role="alert">
+                <KtIcon :name="copyFeedbackKind === 'success' ? 'check' : 'x'" :size="15" :stroke-width="2.5" />
+                <span>{{ copyFeedback }}</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; color: var(--ui-text-muted); font-size: 13px">
+                <KtIcon name="globe" :size="14" />
+                <span style="font-family: var(--ui-font-mono)">{{ verificationUrlText }}</span>
+              </div>
+              <div class="u-divider" style="margin: 20px 0 16px" />
+              <div class="dl-status" :data-ok="authState === 'approved'">
+                <template v-if="authState === 'approved'">
+                  <KtIcon name="check" :size="15" :stroke-width="3" />
+                  {{ t('account.authorized') }}
+                </template>
+                <template v-else-if="authState === 'error'">
+                  <span>{{ errorText || t('account.failed') }}</span>
+                </template>
+                <template v-else>
+                  <KtIcon name="loader" :size="14" class-name="u-spinner" />
+                  {{ t('account.waiting') }}
+                </template>
+              </div>
             </template>
 
             <template v-else>
-              <p class="account-status account-status--error">
-                <span class="account-status-dot" aria-hidden="true" />
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 100px; color: var(--ui-text-muted)">
                 {{ errorText || t('account.unavailable') }}
-              </p>
-            </template>
-          </div>
-
-          <div v-else class="account-device-card account-confirm-card" aria-live="polite">
-            <div v-if="isProfileLoading" class="account-device-loading">
-              <span class="account-pulse" aria-hidden="true" />
-              <span>{{ t('account.loadingProfile') }}</span>
-            </div>
-
-            <template v-else-if="accountProfile">
-              <div class="account-profile-summary">
-                <t-avatar
-                  class="account-avatar"
-                  shape="circle"
-                  size="76px"
-                  :alt="accountName"
-                  :image="accountProfile.image"
-                >
-                  {{ avatarInitial }}
-                </t-avatar>
-
-                <div class="account-profile-copy">
-                  <div class="account-profile-heading">
-                    <h2>{{ accountName }}</h2>
-                    <t-tag theme="primary" variant="light" size="large">{{ accountPlanName }}</t-tag>
-                  </div>
-                  <p>{{ accountEmail }}</p>
-                </div>
               </div>
             </template>
-
-            <template v-else>
-              <p class="account-status account-status--error">
-                <span class="account-status-dot" aria-hidden="true" />
-                {{ profileErrorText || t('account.profileFailed') }}
-              </p>
-            </template>
           </div>
-        </section>
-      </main>
+        </div>
 
-      <footer class="setup-footer">
+        <!-- Account confirm screen -->
+        <div v-else class="u-card ac-card">
+          <div v-if="isProfileLoading" style="display: flex; align-items: center; gap: 12px; color: var(--ui-text-muted)">
+            <KtIcon name="loader" :size="14" class-name="u-spinner" />
+            <span>{{ t('account.loadingProfile') }}</span>
+          </div>
+          <template v-else-if="accountProfile">
+            <span class="u-avatar" :style="{ width: '56px', height: '56px', fontSize: '22px', background: 'linear-gradient(140deg, var(--gold-400), var(--gold-600))', color: '#1a1407' }">
+              {{ avatarInitial }}
+            </span>
+            <div class="ac-profile">
+              <div class="ac-profile-name">
+                <span style="font-weight: 700; font-size: 19px; color: var(--ui-text-highlighted)">{{ accountName }}</span>
+                <span class="u-badge" data-variant="subtle">
+                  <KtIcon name="sparkles" :size="11" />
+                  {{ accountPlanName }}
+                </span>
+              </div>
+              <span style="font-size: 14px; color: var(--ui-text-muted)">{{ accountEmail }}</span>
+            </div>
+          </template>
+          <template v-else>
+            <span style="color: var(--ui-text-muted)">{{ profileErrorText || t('account.profileFailed') }}</span>
+          </template>
+        </div>
+      </div>
+    </div>
+    <div class="ob-footer">
+      <div style="width: 180px; max-width: 30%">
+        <div class="u-stepper">
+          <span v-for="i in stepCount" :key="i" class="u-step-dot" :data-state="i - 1 < stepIndex ? 'done' : i - 1 === stepIndex ? 'active' : 'todo'" />
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px">
         <template v-if="accountStage === 'device'">
-          <t-button
-            theme="default"
-            size="large"
-            class="start-btn setup-back-btn"
-            :disabled="isOpening"
-            @click="handleBack"
-          >
-            <template #prefix>
-              <ArrowLeftIcon />
-            </template>
+          <button class="u-btn" data-variant="subtle" data-color="neutral" data-size="lg" :disabled="isOpening" @click="handleBack">
+            <KtIcon name="arrow-left" :size="17" />
             {{ t('setup.back') }}
-          </t-button>
-
-          <t-button
-            theme="primary"
-            size="large"
-            class="start-btn setup-next-btn"
-            :disabled="!browserUrl || isLoading"
-            :loading="isOpening"
-            @click="handleOpenBrowser"
-          >
+          </button>
+          <button class="u-btn" data-variant="solid" data-color="primary" data-size="lg" :disabled="!browserUrl || isLoading" @click="handleOpenBrowser">
             {{ t('account.openBrowser') }}
-            <template #suffix>
-              <ArrowRightIcon />
-            </template>
-          </t-button>
+            <KtIcon name="external" :size="17" />
+          </button>
         </template>
-
         <template v-else>
-          <t-button
-            theme="default"
-            size="large"
-            class="start-btn setup-back-btn"
-            :disabled="isConfirming || isProfileLoading"
-            @click="handleRelogin"
-          >
-            <template #prefix>
-              <RefreshIcon />
-            </template>
+          <button class="u-btn" data-variant="subtle" data-color="neutral" data-size="lg" :disabled="isConfirming || isProfileLoading" @click="handleRelogin">
             {{ t('account.relogin') }}
-          </t-button>
-
-          <t-button
-            theme="primary"
-            size="large"
-            class="start-btn setup-next-btn"
-            :disabled="!accountProfile || isProfileLoading"
-            :loading="isConfirming"
-            @click="handleConfirmAccount"
-          >
+          </button>
+          <button class="u-btn" data-variant="solid" data-color="primary" data-size="lg" :disabled="!accountProfile || isProfileLoading" @click="handleConfirmAccount">
             {{ t('account.confirmNext') }}
-            <template #suffix>
-              <ArrowRightIcon />
-            </template>
-          </t-button>
+            <KtIcon name="arrow-right" :size="17" />
+          </button>
         </template>
-      </footer>
+      </div>
     </div>
   </div>
 </template>
@@ -154,10 +117,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { MessagePlugin } from 'tdesign-vue-next/es/message'
-import ArrowLeftIcon from 'tdesign-icons-vue-next/esm/components/arrow-left.js'
-import ArrowRightIcon from 'tdesign-icons-vue-next/esm/components/arrow-right.js'
-import RefreshIcon from 'tdesign-icons-vue-next/esm/components/refresh.js'
+import KtIcon from '@/components/KtIcon.vue'
 import {
   authConfig,
   clearAuthToken,
@@ -170,18 +130,14 @@ import {
 
 const { t } = useI18n()
 const props = defineProps({
-  initialAuth: {
-    type: Object,
-    default: null
-  },
-  initialAccount: {
-    type: Object,
-    default: null
-  }
+  initialAuth: { type: Object, default: null },
+  initialAccount: { type: Object, default: null }
 })
 const emit = defineEmits(['back', 'authenticated', 'relogin'])
 
-const accountTitleId = 'account-title'
+const stepIndex = 2
+const stepCount = 5
+
 const accountStage = ref('device')
 const isLoading = ref(true)
 const isOpening = ref(false)
@@ -198,272 +154,127 @@ const profileErrorText = ref('')
 const authState = ref('requesting')
 const authToken = ref(null)
 const accountProfile = ref(null)
+const copyFeedback = ref('')
+const copyFeedbackKind = ref('success')
+const copyFeedbackTimer = ref(null)
 
-const titleText = computed(() => {
-  if (accountStage.value === 'confirm') return t('account.confirmTitle')
-
-  return t('account.title')
-})
-
-const descriptionText = computed(() => {
-  if (accountStage.value === 'confirm') return t('account.confirmDescription')
-
-  return t('account.description')
-})
-
+const titleText = computed(() => accountStage.value === 'confirm' ? t('account.confirmTitle') : t('account.title'))
+const descriptionText = computed(() => accountStage.value === 'confirm' ? t('account.confirmDescription') : t('account.description'))
 const formattedUserCode = computed(() => userCode.value.replace(/[-\s]/g, '').toUpperCase())
-
+const displayedUserCode = computed(() => {
+  const code = formattedUserCode.value
+  return code.length > 4 ? code.replace(/(.{4})/g, '$1 ').trim() : code
+})
 const verificationUrlText = computed(() => verificationUrl.value || browserUrl.value)
-
 const accountName = computed(() => accountProfile.value?.name || t('account.unnamedUser'))
-
 const accountEmail = computed(() => accountProfile.value?.email || t('account.noEmail'))
-
 const accountPlanName = computed(() => accountProfile.value?.planName || 'Free')
-
 const avatarInitial = computed(() => Array.from(accountName.value.trim())[0]?.toUpperCase() || 'K')
 
-const statusTone = computed(() => {
-  if (authState.value === 'approved') return 'success'
-  if (authState.value === 'error') return 'error'
-  return 'pending'
-})
+const clearPollTimer = () => { if (pollTimer.value) { window.clearTimeout(pollTimer.value); pollTimer.value = null } }
+const clearCopyFeedbackTimer = () => { if (copyFeedbackTimer.value) { window.clearTimeout(copyFeedbackTimer.value); copyFeedbackTimer.value = null } }
+const schedulePoll = () => { clearPollTimer(); pollTimer.value = window.setTimeout(handlePollToken, pollIntervalSeconds.value * 1000) }
 
-const statusText = computed(() => {
-  if (authState.value === 'approved') return t('account.authorized')
-  if (authState.value === 'error') return errorText.value || t('account.failed')
-  return t('account.waiting')
-})
-
-const clearPollTimer = () => {
-  if (!pollTimer.value) return
-
-  window.clearTimeout(pollTimer.value)
-  pollTimer.value = null
-}
-
-const schedulePoll = () => {
-  clearPollTimer()
-  pollTimer.value = window.setTimeout(handlePollToken, pollIntervalSeconds.value * 1000)
+const showCopyFeedback = (message, kind = 'success') => {
+  clearCopyFeedbackTimer()
+  copyFeedback.value = message
+  copyFeedbackKind.value = kind
+  copyFeedbackTimer.value = window.setTimeout(() => {
+    copyFeedback.value = ''
+    copyFeedbackTimer.value = null
+  }, 1800)
 }
 
 const getPollErrorText = (code) => {
   if (code === 'access_denied') return t('account.denied')
   if (code === 'expired_token') return t('account.expired')
   if (code === 'missing_base_url') return t('account.missingBaseUrl')
-
   return t('account.failed')
 }
 
 const getProfileErrorText = (code) => {
   if (code === 'missing_api_base_url') return t('account.missingApiBaseUrl')
   if (code === 'missing_access_token' || code === 'http_401') return t('account.profileUnauthorized')
-
   return t('account.profileFailed')
 }
 
 const normalizeAccountProfile = (data) => {
   const user = data?.user || {}
-
-  return {
-    id: user.id || '',
-    name: user.name || '',
-    email: user.email || '',
-    image: user.image || '',
-    planName: data?.subscription?.plan?.name || 'Free'
-  }
-}
-
-const writeClipboardText = async (value) => {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value)
-    return
-  }
-
-  const textarea = document.createElement('textarea')
-  textarea.value = value
-  textarea.setAttribute('readonly', '')
-  textarea.style.position = 'fixed'
-  textarea.style.top = '-999px'
-  textarea.style.opacity = '0'
-  document.body.appendChild(textarea)
-  textarea.select()
-
-  try {
-    const didCopy = document.execCommand('copy')
-
-    if (!didCopy) {
-      throw new Error('copy_failed')
-    }
-  } finally {
-    document.body.removeChild(textarea)
-  }
+  return { id: user.id || '', name: user.name || '', email: user.email || '', image: user.image || '', planName: data?.subscription?.plan?.name || 'Free' }
 }
 
 const handleCopyCode = async () => {
   if (!formattedUserCode.value) return
-
   try {
-    await writeClipboardText(formattedUserCode.value)
-    MessagePlugin.success({
-      content: t('account.copied'),
-      duration: 1800
-    })
-  } catch (error) {
-    console.warn('Unable to copy device code:', error)
-    MessagePlugin.error({
-      content: t('account.copyFailed'),
-      duration: 2200
-    })
+    await navigator.clipboard.writeText(formattedUserCode.value)
+    showCopyFeedback(t('account.copied'), 'success')
+  } catch {
+    showCopyFeedback(t('account.copyFailed'), 'error')
   }
 }
 
 const loadAccountProfile = async () => {
-  isProfileLoading.value = true
-  profileErrorText.value = ''
-  accountProfile.value = null
-
-  try {
-    const data = await fetchCurrentUser(authToken.value)
-    accountProfile.value = normalizeAccountProfile(data)
-  } catch (error) {
-    console.warn('Unable to fetch current user profile:', error)
-    profileErrorText.value = getProfileErrorText(error.code)
-  } finally {
-    isProfileLoading.value = false
-  }
+  isProfileLoading.value = true; profileErrorText.value = ''; accountProfile.value = null
+  try { const data = await fetchCurrentUser(authToken.value); accountProfile.value = normalizeAccountProfile(data) }
+  catch (error) { profileErrorText.value = getProfileErrorText(error.code) }
+  finally { isProfileLoading.value = false }
 }
 
 const handlePollToken = async () => {
-  if (!deviceCode.value || authState.value === 'approved') {
-    return
-  }
-
+  if (!deviceCode.value || authState.value === 'approved') return
   try {
     const data = await pollDeviceToken(deviceCode.value)
-
-    if (data?.access_token) {
-      clearPollTimer()
-      authToken.value = saveAuthToken(data)
-      authState.value = 'approved'
-      accountStage.value = 'confirm'
-      await loadAccountProfile()
-      return
-    }
-
+    if (data?.access_token) { clearPollTimer(); authToken.value = saveAuthToken(data); authState.value = 'approved'; accountStage.value = 'confirm'; await loadAccountProfile(); return }
     schedulePoll()
   } catch (error) {
-    if (error.code === 'authorization_pending') {
-      schedulePoll()
-      return
-    }
-
-    if (error.code === 'slow_down') {
-      pollIntervalSeconds.value += 5
-      schedulePoll()
-      return
-    }
-
-    authState.value = 'error'
-    errorText.value = getPollErrorText(error.code)
+    if (error.code === 'authorization_pending') { schedulePoll(); return }
+    if (error.code === 'slow_down') { pollIntervalSeconds.value += 5; schedulePoll(); return }
+    authState.value = 'error'; errorText.value = getPollErrorText(error.code)
   }
 }
 
 const startDeviceFlow = async () => {
-  accountStage.value = 'device'
-  isLoading.value = true
-  errorText.value = ''
-  profileErrorText.value = ''
-  accountProfile.value = null
-  authToken.value = null
-  authState.value = 'requesting'
-  deviceCode.value = ''
-  userCode.value = ''
-  browserUrl.value = ''
-  verificationUrl.value = ''
-  clearPollTimer()
-
+  accountStage.value = 'device'; isLoading.value = true; errorText.value = ''; profileErrorText.value = ''
+  accountProfile.value = null; authToken.value = null; authState.value = 'requesting'
+  deviceCode.value = ''; userCode.value = ''; browserUrl.value = ''; verificationUrl.value = ''; clearPollTimer()
   try {
-    if (!authConfig.authBaseUrl) {
-      throw Object.assign(new Error('missing_base_url'), { code: 'missing_base_url' })
-    }
-
+    if (!authConfig.authBaseUrl) throw Object.assign(new Error('missing_base_url'), { code: 'missing_base_url' })
     const data = await requestDeviceCode()
-
-    deviceCode.value = data.device_code
-    userCode.value = data.user_code
-    verificationUrl.value = data.verification_uri
-    browserUrl.value = getBrowserVerificationUrl(data)
-    pollIntervalSeconds.value = Number(data.interval) || 5
-    authState.value = 'pending'
-    schedulePoll()
-  } catch (error) {
-    authState.value = 'error'
-    errorText.value = getPollErrorText(error.code)
-  } finally {
-    isLoading.value = false
-  }
+    deviceCode.value = data.device_code; userCode.value = data.user_code; verificationUrl.value = data.verification_uri
+    browserUrl.value = getBrowserVerificationUrl(data); pollIntervalSeconds.value = Number(data.interval) || 5
+    authState.value = 'pending'; schedulePoll()
+  } catch (error) { authState.value = 'error'; errorText.value = getPollErrorText(error.code) }
+  finally { isLoading.value = false }
 }
 
 const handleOpenBrowser = async () => {
-  if (!browserUrl.value) return
-
-  isOpening.value = true
-
+  if (!browserUrl.value) return; isOpening.value = true
   try {
-    if (window.electronAPI?.openExternal) {
-      const didOpen = await window.electronAPI.openExternal(browserUrl.value)
-
-      if (!didOpen) {
-        throw new Error('open_external_failed')
-      }
-
-      return
-    }
-
+    if (window.electronAPI?.openExternal) { await window.electronAPI.openExternal(browserUrl.value); return }
     window.open(browserUrl.value, '_blank', 'noopener,noreferrer')
-  } catch (error) {
-    console.warn('Unable to open verification URL:', error)
-    errorText.value = t('account.openFailed')
-    authState.value = 'error'
-  } finally {
-    isOpening.value = false
-  }
+  } catch { errorText.value = t('account.openFailed'); authState.value = 'error' }
+  finally { isOpening.value = false }
 }
 
-const handleRelogin = async () => {
-  clearAuthToken()
-  authToken.value = null
-  emit('relogin')
-  await startDeviceFlow()
-}
+const handleRelogin = async () => { clearAuthToken(); authToken.value = null; emit('relogin'); await startDeviceFlow() }
 
 const handleConfirmAccount = () => {
   if (!authToken.value || !accountProfile.value) return
-
   isConfirming.value = true
-  emit('authenticated', {
-    auth: authToken.value,
-    account: accountProfile.value
-  })
+  emit('authenticated', { auth: authToken.value, account: accountProfile.value })
 }
 
-const handleBack = () => {
-  clearPollTimer()
-  emit('back')
-}
+const handleBack = () => { clearPollTimer(); emit('back') }
 
 onMounted(() => {
   if (props.initialAuth && props.initialAccount) {
-    authToken.value = props.initialAuth
-    accountProfile.value = props.initialAccount
-    authState.value = 'approved'
-    accountStage.value = 'confirm'
-    isLoading.value = false
-    return
+    authToken.value = props.initialAuth; accountProfile.value = props.initialAccount
+    authState.value = 'approved'; accountStage.value = 'confirm'; isLoading.value = false; return
   }
-
   startDeviceFlow()
 })
-onBeforeUnmount(clearPollTimer)
+onBeforeUnmount(() => {
+  clearPollTimer()
+  clearCopyFeedbackTimer()
+})
 </script>

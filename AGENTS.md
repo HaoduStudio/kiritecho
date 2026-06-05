@@ -30,7 +30,8 @@
 
 ## 技术栈与目录约定
 
-- 技术栈：Vue 3、Vite、Electron、TDesign Vue Next、vue-i18n。
+- 技术栈：Vue 3、Vite、Electron、Nuxt UI、vue-i18n。
+- UI 层以 Nuxt UI 约定为准；仓库中残留的 TDesign 相关依赖、组件或历史代码只按兼容处理，不作为新增 UI 的技术约定。
 - 前端入口在 `src/main.js`，根组件在 `src/App.vue`。
 - 路径别名 `@` 指向 `src`。
 
@@ -95,14 +96,15 @@
 - 不在组件里直接堆叠复杂业务流程；可复用逻辑应抽到 `src/` 下的独立模块。
 - 捕获/上传相关的业务逻辑放在 `src/composables/` 或 `src/services/`，组件里只做 UI 状态机和事件分发；不要在组件里直接调 `window.electronAPI` 拿原始 payload，统一从 composable 订阅。
 
-## TDesign Vue 使用规范
+## Nuxt UI 使用规范
 
-- 优先使用 TDesign Vue 组件构建交互控件，例如 `t-button`、`t-radio-group`、`t-radio`、`t-config-provider`。
-- 不手写已有 TDesign 能提供的基础控件行为，例如按钮 loading、disabled、单选组状态等。
-- TDesign 组件的视觉覆盖应通过局部 class 和 CSS 变量完成，避免大范围覆盖全局类。
+- 优先使用 Nuxt UI 组件构建交互控件，例如 `UButton`、`UInput`、`UModal`、`UCheckbox`、`UTable`、`UCard`。
+- 优先使用 Nuxt UI 内置 props、状态、slots、loading、disabled、icon、modal 等能力，不手写已有组件能提供的基础控件行为。
+- Nuxt UI 组件的视觉覆盖应通过局部 class、`ui` 配置和 CSS 变量完成，避免大范围覆盖全局类。
 - 组件状态要完整处理：默认、hover、active/checked、disabled、loading。
 - 交互控件需要保留可访问性语义；图标按钮应提供 `aria-label`。
-- TDesign 国际化配置应继续通过根部 `t-config-provider` 注入。
+- 不确定 Nuxt UI 组件 API、props、slots 或版本差异时，先查询当前 Nuxt UI 文档或 MCP，再修改组件。
+- 国旗必须使用 `vue-country-flag-next`；不要用 CSS、SVG、文本或手写图形绘制国旗，也不要切换到 Vue 2 版本的 `vue-country-flag`。
 
 ## 远程 API 客户端规范
 
@@ -190,13 +192,11 @@ renderer invoke `parse:file` → 主进程 mammoth 抽纯文本 → 回传 `{ ki
 
 renderer 据此走 `files.syncFiles`（带 `text_content`）和/或 `memories.syncMemories` 的 image 路径。
 
-## 按需导入和构建约束
+## Nuxt UI 导入和构建约束
 
-- 本项目为了控制构建产物体积，不使用 `app.use(TDesign)` 全量注册。
-- 新增 TDesign 组件时，必须在 `src/main.js` 中从对应的 `tdesign-vue-next/es/...` 路径导入，并加入 `tdesignComponents` 数组。
-- 不要重新引入 `tdesign-vue-next/es/style/index.css`，组件样式应随按需组件入口导入。
-- 新增图标时，不要从 `tdesign-icons-vue-next` 根入口导入通用 `Icon` 组件。
-- 图标应从具体文件导入，例如 `tdesign-icons-vue-next/esm/components/arrow-right.js`，并在模板中使用明确组件名，例如 `<ArrowRightIcon />`。
+- 新增 UI 控件时遵循 Nuxt / Nuxt UI 的自动导入、组件命名和图标约定，不再沿用旧 UI 框架的手动注册模式。
+- 不要新增旧 UI 框架的手动注册、按路径组件导入或图标入口约定；这些属于旧实现痕迹，不应作为新代码参考。
+- 新增图标时优先使用 Nuxt UI 支持的图标能力和项目已有图标约定，避免重新引入旧 UI 框架的图标入口。
 - 新增第三方依赖后要关注 `npm run build` 输出；如出现超过 500 kB 的 chunk 警告，优先按需导入或在 `vite.config.js` 的 `manualChunks` 中拆分稳定 vendor chunk。
 - 不要为了隐藏警告而单纯调高 `chunkSizeWarningLimit`，除非已经确认包体拆分没有实际收益。
 
@@ -233,7 +233,7 @@ renderer 据此走 `files.syncFiles`（带 `text_content`）和/或 `memories.sy
 - 所有面向用户的文案都放在 `src/i18n/messages.js`。
 - 新增文案时同步维护所有已支持语言。
 - locale 值沿用已有格式，例如 `zh-CN`、`zh-TW`、`en-US`。
-- TDesign 语言包映射应与应用 locale 保持一致。
+- Nuxt UI 语言包或本地化配置应与应用 locale 保持一致。
 - 修改中文文案时注意文件编码，避免出现乱码。
 - 不在 i18n 文件中提前写入未实现功能的说明文案。
 - 错误码到本地化文案的映射统一在 `src/services/api/errors.js`（或同等位置），不要在每个调用点重复写 `if (code === '...') return t('...')`。

@@ -5,6 +5,11 @@ export const messages = {
     },
     splash: {
       title: '欢迎！',
+      heroTitle: '欢迎！',
+      heroSub: '让 AI 来助力你的资料摘录体验。\n截屏、提问、保存，一气呵成。',
+      badge: 'AI 资料摘录助手',
+      chipExtract: '摘录',
+      chipScreenshot: '截屏',
       description: '让 AI 来助力你的资料摘录体验。',
       agreementPrefix: '我已阅读并同意',
       agreementJoiner: '和',
@@ -21,14 +26,19 @@ export const messages = {
     },
     language: {
       title: '选择应用语言',
-      shortTitle: '语言'
+      shortTitle: '语言',
+      subtitle: '可随时在设置中更改。'
     },
     theme: {
       title: '选择外观模式',
       shortTitle: '外观',
+      subtitle: '决定 Kiritecho 的明暗主题。',
       light: '日间模式',
+      lightDesc: '明亮清爽',
       dark: '暗黑模式',
-      system: '跟随系统设置'
+      darkDesc: '护眼专注',
+      system: '跟随系统',
+      systemDesc: '自动切换'
     },
     account: {
       title: '登录拾帖账号',
@@ -76,7 +86,11 @@ export const messages = {
       duplicate: '两个快捷键不能相同',
       modifierRequired: '请使用包含 Ctrl、Alt、Shift 或 Meta 的组合键',
       saved: '设置已保存',
-      saveFailed: '保存失败，请稍后重试'
+      saveFailed: '保存失败，请稍后重试',
+      finish: '完成设置'
+    },
+    window: {
+      toggleTheme: '切换主题'
     },
     main: {
       navigation: '主导航',
@@ -96,14 +110,24 @@ export const messages = {
       modelsLoadFailed: '无法加载可用模型，请检查网络或登录状态。',
       modelSelectLabel: '选择模型',
       send: '发送',
+      screenshot: '截屏摘录',
+      composerHint: 'Kiritecho 可能会出错，请核对重要信息。按 Enter 发送，Shift+Enter 换行。',
       userRole: '你',
       assistantRole: 'Kiritecho',
       systemRole: '系统',
       messageListLabel: '聊天消息'
     },
     settings: {
-      eyebrow: '账户',
+      eyebrow: '偏好设置',
       title: '设置',
+      appearance: '外观',
+      themeMode: '主题模式',
+      themeModeDesc: '选择 Kiritecho 的明暗外观。',
+      accountSection: '账号',
+      about: '关于',
+      appName: '拾帖',
+      version: '版本 1.0.0 · 已是最新',
+      checkUpdate: '检查更新',
       plan: '当前计划',
       freePlan: 'Free',
       quotaBalance: '剩余额度',
@@ -119,6 +143,11 @@ export const messages = {
     },
     splash: {
       title: '歡迎！',
+      heroTitle: '歡迎！',
+      heroSub: '讓 AI 來助力你的資料摘錄體驗。\n截屏、提問、保存，一氣呵成。',
+      badge: 'AI 資料摘錄助手',
+      chipExtract: '摘錄',
+      chipScreenshot: '截屏',
       description: '讓 AI 來助力你的資料摘錄體驗。',
       agreementPrefix: '我已閱讀並同意',
       agreementJoiner: '和',
@@ -135,14 +164,19 @@ export const messages = {
     },
     language: {
       title: '選擇應用語言',
-      shortTitle: '語言'
+      shortTitle: '語言',
+      subtitle: '可隨時在設定中更改。'
     },
     theme: {
       title: '選擇外觀模式',
       shortTitle: '外觀',
+      subtitle: '決定 Kiritecho 的明暗主題。',
       light: '日間模式',
+      lightDesc: '明亮清爽',
       dark: '暗黑模式',
-      system: '跟隨系統設定'
+      darkDesc: '護眼專注',
+      system: '跟隨系統',
+      systemDesc: '自動切換'
     },
     account: {
       title: '登入拾帖帳號',
@@ -190,7 +224,11 @@ export const messages = {
       duplicate: '兩個快捷鍵不能相同',
       modifierRequired: '請使用包含 Ctrl、Alt、Shift 或 Meta 的組合鍵',
       saved: '設定已保存',
-      saveFailed: '保存失敗，請稍後重試'
+      saveFailed: '保存失敗，請稍後重試',
+      finish: '完成設定'
+    },
+    window: {
+      toggleTheme: '切換主題'
     },
     main: {
       navigation: '主導覽',
@@ -210,14 +248,24 @@ export const messages = {
       modelsLoadFailed: '無法載入可用模型，請檢查網路或登入狀態。',
       modelSelectLabel: '選擇模型',
       send: '發送',
+      screenshot: '截屏摘錄',
+      composerHint: 'Kiritecho 可能會出錯，請核對重要資訊。按 Enter 發送，Shift+Enter 換行。',
       userRole: '你',
       assistantRole: 'Kiritecho',
       systemRole: '系統',
       messageListLabel: '聊天訊息'
     },
     settings: {
-      eyebrow: '帳戶',
+      eyebrow: '偏好設定',
       title: '設定',
+      appearance: '外觀',
+      themeMode: '主題模式',
+      themeModeDesc: '選擇 Kiritecho 的明暗外觀。',
+      accountSection: '帳號',
+      about: '關於',
+      appName: '拾帖',
+      version: '版本 1.0.0 · 已是最新',
+      checkUpdate: '檢查更新',
       plan: '目前方案',
       freePlan: 'Free',
       quotaBalance: '剩餘額度',
@@ -233,6 +281,11 @@ export const messages = {
     },
     splash: {
       title: 'Welcome!',
+      heroTitle: 'Welcome!',
+      heroSub: 'Let AI support the way you capture and organize source notes.\nScreenshot, ask, save — all in one flow.',
+      badge: 'AI Notes Assistant',
+      chipExtract: 'Extract',
+      chipScreenshot: 'Screenshot',
       description: 'Let AI support the way you capture and organize source notes.',
       agreementPrefix: 'I have read and agree to',
       agreementJoiner: 'and',
@@ -249,14 +302,19 @@ export const messages = {
     },
     language: {
       title: 'Choose app language',
-      shortTitle: 'Language'
+      shortTitle: 'Language',
+      subtitle: 'You can change this later in settings.'
     },
     theme: {
       title: 'Choose appearance',
       shortTitle: 'Appearance',
+      subtitle: 'Set the light/dark theme for Kiritecho.',
       light: 'Light mode',
+      lightDesc: 'Bright and clean',
       dark: 'Dark mode',
-      system: 'Follow system'
+      darkDesc: 'Easy on the eyes',
+      system: 'Follow system',
+      systemDesc: 'Auto-switch'
     },
     account: {
       title: 'Sign in to Kiritecho',
@@ -304,7 +362,11 @@ export const messages = {
       duplicate: 'The two shortcuts cannot be the same',
       modifierRequired: 'Use a shortcut with Ctrl, Alt, Shift, or Meta',
       saved: 'Settings saved',
-      saveFailed: 'Save failed. Please try again later.'
+      saveFailed: 'Save failed. Please try again later.',
+      finish: 'Finish setup'
+    },
+    window: {
+      toggleTheme: 'Toggle theme'
     },
     main: {
       navigation: 'Main navigation',
@@ -324,14 +386,24 @@ export const messages = {
       modelsLoadFailed: 'Unable to load available models. Check your network or sign-in state.',
       modelSelectLabel: 'Choose model',
       send: 'Send',
+      screenshot: 'Screenshot capture',
+      composerHint: 'Kiritecho may make mistakes. Please verify important information. Press Enter to send, Shift+Enter for new line.',
       userRole: 'You',
       assistantRole: 'Kiritecho',
       systemRole: 'System',
       messageListLabel: 'Chat messages'
     },
     settings: {
-      eyebrow: 'Account',
+      eyebrow: 'Preferences',
       title: 'Settings',
+      appearance: 'Appearance',
+      themeMode: 'Theme mode',
+      themeModeDesc: 'Choose the light/dark appearance for Kiritecho.',
+      accountSection: 'Account',
+      about: 'About',
+      appName: 'Kiritecho',
+      version: 'Version 1.0.0 · Up to date',
+      checkUpdate: 'Check for updates',
       plan: 'Current plan',
       freePlan: 'Free',
       quotaBalance: 'Quota balance',

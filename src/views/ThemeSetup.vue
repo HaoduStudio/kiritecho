@@ -1,113 +1,76 @@
 <template>
-  <div class="setup-container">
-    <div class="setup-background">
-      <div class="setup-grid" />
-      <div class="setup-sheen" />
-    </div>
-
-    <div class="setup-shell">
-      <header class="setup-header">
-        <span class="setup-brand">{{ t('setup.brand') }}</span>
-      </header>
-
-      <main class="setup-content setup-content--theme" aria-labelledby="theme-title">
-        <section class="setup-panel theme-panel">
-          <p class="setup-eyebrow">{{ t('theme.shortTitle') }}</p>
-          <h1 id="theme-title" class="setup-title">{{ t('theme.title') }}</h1>
-
-          <t-radio-group
-            v-model="selectedTheme"
-            class="theme-options"
-            @change="handleThemeChange"
+  <div class="ob-shell" style="animation: kt-fade .35s ease both">
+    <div class="ob-body">
+      <div class="ob-head">
+        <div class="eyebrow">{{ t('theme.shortTitle') }}</div>
+        <h1 class="ob-title">{{ t('theme.title') }}</h1>
+        <p class="ob-sub">{{ t('theme.subtitle') }}</p>
+      </div>
+      <div class="ob-content">
+        <div class="ob-grid3">
+          <button
+            v-for="theme in THEMES"
+            :key="theme.id"
+            class="u-select-card"
+            :data-active="selectedTheme === theme.id ? 'true' : undefined"
+            @click="handleThemeChange(theme.id)"
           >
-            <t-radio
-              v-for="option in themeOptions"
-              :key="option.value"
-              :value="option.value"
-              class="theme-option"
-            >
-              <span class="theme-option-content">
-                <span :class="['theme-preview', `theme-preview--${option.value}`]" aria-hidden="true">
-                  <span class="theme-preview-celestial" />
-                  <span class="theme-preview-window">
-                    <span class="theme-preview-sidebar">
-                      <span />
-                      <span />
-                      <span />
-                    </span>
-                    <span class="theme-preview-main">
-                      <span />
-                      <span />
-                      <span />
-                    </span>
-                  </span>
-                </span>
-
-                <span class="theme-option-caption">
-                  <span class="theme-option-title">{{ t(option.labelKey) }}</span>
-                  <span class="theme-option-check">
-                    <CheckIcon v-if="selectedTheme === option.value" />
-                  </span>
-                </span>
+            <div class="sc-preview">
+              <div v-if="theme.id === 'system'" class="tp-split">
+                <ThemePreview kind="light" />
+                <ThemePreview kind="dark" />
+              </div>
+              <ThemePreview v-else :kind="theme.id" />
+            </div>
+            <div class="sc-foot">
+              <div style="display: flex; flex-direction: column; gap: 2px">
+                <span style="font-weight: 700; font-size: 15.5px; color: var(--ui-text-highlighted)">{{ t(theme.labelKey) }}</span>
+                <span style="font-size: 12.5px; color: var(--ui-text-muted)">{{ t(theme.descKey) }}</span>
+              </div>
+              <span class="sc-check" :data-active="selectedTheme === theme.id ? 'true' : undefined">
+                <KtIcon name="check" :size="16" :stroke-width="3" />
               </span>
-            </t-radio>
-          </t-radio-group>
-        </section>
-      </main>
-
-      <footer class="setup-footer">
-        <t-button
-          theme="default"
-          size="large"
-          class="start-btn setup-back-btn"
-          @click="handleBack"
-        >
-          <template #prefix>
-            <ArrowLeftIcon />
-          </template>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="ob-footer">
+      <div style="width: 180px; max-width: 30%">
+        <div class="u-stepper">
+          <span v-for="i in stepCount" :key="i" class="u-step-dot" :data-state="i - 1 < stepIndex ? 'done' : i - 1 === stepIndex ? 'active' : 'todo'" />
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <button class="u-btn" data-variant="subtle" data-color="neutral" data-size="lg" @click="handleBack">
+          <KtIcon name="arrow-left" :size="17" />
           {{ t('setup.back') }}
-        </t-button>
-
-        <t-button
-          theme="primary"
-          size="large"
-          class="start-btn setup-next-btn"
-          @click="handleNext"
-        >
+        </button>
+        <button class="u-btn" data-variant="solid" data-color="primary" data-size="lg" @click="handleNext">
           {{ t('setup.next') }}
-          <template #suffix>
-            <ArrowRightIcon />
-          </template>
-        </t-button>
-      </footer>
+          <KtIcon name="arrow-right" :size="17" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, h } from 'vue'
 import { useI18n } from 'vue-i18n'
-import ArrowLeftIcon from 'tdesign-icons-vue-next/esm/components/arrow-left.js'
-import ArrowRightIcon from 'tdesign-icons-vue-next/esm/components/arrow-right.js'
-import CheckIcon from 'tdesign-icons-vue-next/esm/components/check.js'
+import KtIcon from '@/components/KtIcon.vue'
 import { getThemePreference, setThemePreference } from '@/theme'
 
 const { t } = useI18n()
 const emit = defineEmits(['back', 'next'])
 
-const themeOptions = [
-  {
-    value: 'light',
-    labelKey: 'theme.light'
-  },
-  {
-    value: 'dark',
-    labelKey: 'theme.dark'
-  },
-  {
-    value: 'system',
-    labelKey: 'theme.system'
-  }
+const stepIndex = 1
+const stepCount = 5
+
+const THEMES = [
+  { id: 'light', labelKey: 'theme.light', descKey: 'theme.lightDesc' },
+  { id: 'dark', labelKey: 'theme.dark', descKey: 'theme.darkDesc' },
+  { id: 'system', labelKey: 'theme.system', descKey: 'theme.systemDesc' },
 ]
 
 const selectedTheme = ref(getThemePreference())
@@ -117,11 +80,28 @@ const handleThemeChange = (value) => {
   setThemePreference(value)
 }
 
-const handleNext = () => {
-  emit('next')
-}
+const handleNext = () => emit('next')
+const handleBack = () => emit('back')
 
-const handleBack = () => {
-  emit('back')
+const ThemePreview = (props) => {
+  const kind = props.kind
+  return h('div', { class: `tp tp-${kind}` }, [
+    h('div', { class: 'tp-row' }, [
+      h('span', { class: 'tp-line a' }),
+      h('span', { class: 'tp-line b' }),
+    ]),
+    h('div', { class: 'tp-row' }, [
+      h('span', { class: 'tp-line a2' }),
+      h('span', { class: 'tp-line b2' }),
+    ]),
+    h('div', { class: 'tp-row' }, [
+      h('span', { class: 'tp-line a3' }),
+      h('span', { class: 'tp-line b3' }),
+    ]),
+    h('span', { class: `tp-orb ${kind === 'dark' ? 'moon' : 'sun'}` }, [
+      h(KtIcon, { name: kind === 'dark' ? 'moon' : 'sun', size: 16 }),
+    ]),
+  ])
 }
+ThemePreview.props = ['kind']
 </script>
