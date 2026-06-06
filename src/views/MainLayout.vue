@@ -27,7 +27,7 @@
       </div>
     </aside>
     <main class="app-main">
-      <AskPage v-if="activePage === 'ask'" @conversation-created="handleConversationCreated" />
+      <AskPage v-if="activePage === 'ask'" :account="account" @conversation-created="handleConversationCreated" />
       <SettingsPage v-else :account="account" @logout="emit('logout')" />
     </main>
   </div>

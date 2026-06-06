@@ -115,7 +115,8 @@ export const messages = {
       userRole: '你',
       assistantRole: 'Kiritecho',
       systemRole: '系统',
-      messageListLabel: '聊天消息'
+      messageListLabel: '聊天消息',
+      sendError: '发送失败，请重试'
     },
     settings: {
       eyebrow: '偏好设置',
@@ -253,7 +254,8 @@ export const messages = {
       userRole: '你',
       assistantRole: 'Kiritecho',
       systemRole: '系統',
-      messageListLabel: '聊天訊息'
+      messageListLabel: '聊天訊息',
+      sendError: '發送失敗，請重試'
     },
     settings: {
       eyebrow: '偏好設定',
@@ -391,7 +393,8 @@ export const messages = {
       userRole: 'You',
       assistantRole: 'Kiritecho',
       systemRole: 'System',
-      messageListLabel: 'Chat messages'
+      messageListLabel: 'Chat messages',
+      sendError: 'Failed to send, please try again'
     },
     settings: {
       eyebrow: 'Preferences',

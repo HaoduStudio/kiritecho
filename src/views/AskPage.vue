@@ -24,17 +24,32 @@
     <div v-else ref="scrollRef" class="chat-scroll kt-scroll">
       <div class="chat-thread">
         <div v-for="(m, i) in messages" :key="i" :class="['msg', m.role === 'user' ? 'user' : 'ai']">
+          <!-- User message -->
           <template v-if="m.role === 'user'">
             <div class="bubble user">{{ m.content }}</div>
+            <span class="user-ava">{{ userInitial }}</span>
           </template>
+          <!-- AI message -->
           <template v-else>
             <span class="ai-ava"><KtIcon name="sparkles" :size="15" /></span>
-            <div style="min-width: 0">
+            <div style="min-width: 0; flex: 1">
               <div class="ai-name">
                 {{ m.modelName || 'AI' }}
-                <span v-if="m.isStreaming" class="typing"><i /><i /><i /></span>
+                <span v-if="m.status === 'streaming'" class="typing"><i /><i /><i /></span>
               </div>
-              <div v-if="m.content" class="bubble ai">{{ m.content }}</div>
+              <!-- Pending: no content yet -->
+              <div v-if="m.status === 'pending'" class="bubble ai">
+                <div class="ai-loading">
+                  <span class="ai-loading-dot" /><span class="ai-loading-dot" /><span class="ai-loading-dot" />
+                </div>
+              </div>
+              <!-- Streaming / Complete: render markdown -->
+              <div v-else-if="m.content" class="bubble ai md-content" v-html="renderMarkdown(m.content)" />
+              <!-- Error -->
+              <div v-if="m.status === 'error'" class="msg-error">
+                <KtIcon name="alert-circle" :size="14" />
+                <span>{{ t('ask.sendError') }}</span>
+              </div>
             </div>
           </template>
         </div>
@@ -103,10 +118,14 @@
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
 import KtIcon from '@/components/KtIcon.vue'
 import { getModelKey, useModels } from '@/composables/useModels'
 import { useChat } from '@/composables/useChat'
 
+const props = defineProps({
+  account: { type: Object, default: null }
+})
 const emit = defineEmits(['conversation-created'])
 const { t } = useI18n()
 
@@ -121,6 +140,21 @@ const SUGGESTIONS = [
   { icon: 'search', t: '资料问答', d: '基于你的摘录库提问' },
   { icon: 'save', t: '整理笔记', d: '把零散内容归档成卡片' },
 ]
+
+marked.setOptions({
+  breaks: true,
+  gfm: true
+})
+
+const renderMarkdown = (content) => {
+  if (!content) return ''
+  return marked.parse(content)
+}
+
+const userInitial = computed(() => {
+  const name = props.account?.name || props.account?.email || ''
+  return name ? name.slice(0, 1).toUpperCase() : 'U'
+})
 
 const {
   availableModels,
