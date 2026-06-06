@@ -6,7 +6,7 @@
     </div>
 
     <!-- Empty state -->
-    <div v-if="!messages.length" class="chat-empty">
+    <div v-if="!messages.length" class="chat-empty kt-scroll">
       <h1 class="ce-title">{{ t('ask.welcome') }}</h1>
       <p class="ce-sub">{{ t('ask.welcomeDescription') }}</p>
       <div class="ce-grid">

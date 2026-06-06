@@ -32,14 +32,13 @@
 .view-title { margin: 4px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--ui-text-highlighted); }
 
 .set-wrap { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; }
-.set-wrap .view-head { text-align: center; }
 .set-inner { max-width: 760px; width: 100%; margin: 0 auto; padding: 8px 40px 0; }
-.set-group-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ui-text-dimmed); margin: 26px 4px 10px; text-align: center; }
+.set-group-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ui-text-dimmed); margin: 26px 4px 10px; }
 .set-card { padding: 4px 4px; }
-.set-row { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 16px 16px; border-bottom: 1px solid var(--ui-border-muted); text-align: center; flex-wrap: wrap; }
+.set-row { display: flex; align-items: center; gap: 14px; padding: 16px 16px; border-bottom: 1px solid var(--ui-border-muted); }
 .set-ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--ui-text-toned); background: var(--ui-bg-elevated); flex-shrink: 0; }
-.set-copy { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; flex: 0 1 320px; text-align: center; }
-.set-inline-title { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.set-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.set-inline-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .seg { display: inline-flex; padding: 3px; background: var(--ui-bg-elevated); border: 1px solid var(--ui-border); border-radius: 10px; gap: 2px; }
 .seg-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 7px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; color: var(--ui-text-muted); transition: background-color .12s, color .12s; font-family: inherit; }
 .seg-btn:hover { color: var(--ui-text-highlighted); }
