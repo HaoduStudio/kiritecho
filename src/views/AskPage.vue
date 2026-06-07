@@ -31,20 +31,35 @@
           </template>
           <!-- AI message -->
           <template v-else>
-            <span class="ai-ava"><KtIcon name="sparkles" :size="15" /></span>
             <div style="min-width: 0; flex: 1">
-              <div class="ai-name">
-                {{ m.modelName || 'AI' }}
-                <span v-if="m.status === 'streaming'" class="typing"><i /><i /><i /></span>
-              </div>
               <!-- Pending: no content yet -->
               <div v-if="m.status === 'pending'" class="bubble ai">
                 <div class="ai-loading">
                   <span class="ai-loading-dot" /><span class="ai-loading-dot" /><span class="ai-loading-dot" />
                 </div>
               </div>
-              <!-- Streaming / Complete: render markdown -->
-              <div v-else-if="m.content" class="bubble ai md-content" v-html="renderMarkdown(m.content)" />
+              <!-- Streaming / Complete -->
+              <template v-else>
+                <!-- Reasoning (Nuxt UI ChatReasoning style) -->
+                <div v-if="m.reasoning" class="cr">
+                  <button
+                    class="cr-trigger"
+                    :data-state="isReasoningExpanded(i, m) ? 'open' : 'closed'"
+                    @click="toggleReasoning(i)"
+                  >
+                    <span class="cr-leading">
+                      <KtIcon name="chevron-down" :size="16" class="cr-chevron" />
+                    </span>
+                    <span v-if="m.status === 'streaming' && !m.content" class="cr-label cr-shimmer">{{ t('ask.reasoningLabel') }}</span>
+                    <span v-else class="cr-label">{{ t('ask.reasoningLabel') }}</span>
+                  </button>
+                  <div class="cr-collapsible" :data-state="isReasoningExpanded(i, m) ? 'open' : 'closed'">
+                    <div class="cr-body kt-scroll" v-html="renderMarkdown(m.reasoning)" />
+                  </div>
+                </div>
+                <!-- Main content -->
+                <div v-if="m.content" class="bubble ai md-content" v-html="renderMarkdown(m.content)" />
+              </template>
               <!-- Error -->
               <div v-if="m.status === 'error'" class="msg-error">
                 <KtIcon name="alert-circle" :size="14" />
@@ -94,6 +109,13 @@
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 8px">
+            <button
+              :class="['wc-icon', { 'wc-active': thinkingEnabled }]"
+              :title="thinkingEnabled ? t('ask.thinkingOn') : t('ask.thinkingOff')"
+              @click="thinkingEnabled = !thinkingEnabled"
+            >
+              <KtIcon name="brain" :size="16" />
+            </button>
             <button class="wc-icon" :title="t('ask.screenshot')"><KtIcon name="scissors" :size="16" /></button>
             <button
               class="u-btn"
@@ -133,6 +155,8 @@ const draft = ref('')
 const modelOpen = ref(false)
 const modelRef = ref(null)
 const scrollRef = ref(null)
+const thinkingEnabled = ref(false)
+const expandedReasoning = ref({})
 
 const SUGGESTIONS = [
   { icon: 'scissors', t: '截屏摘录', d: '框选屏幕，自动提炼要点' },
@@ -201,6 +225,15 @@ const handleComposerKeydown = (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(draft.value) }
 }
 
+const isReasoningExpanded = (index, msg) => {
+  if (expandedReasoning.value[index] !== undefined) return expandedReasoning.value[index]
+  return msg.status === 'streaming'
+}
+
+const toggleReasoning = (index) => {
+  expandedReasoning.value[index] = !isReasoningExpanded(index, messages.value[index])
+}
+
 const handleSuggestion = (s) => {
   handleSend(s.t + '：' + s.d)
 }
@@ -210,7 +243,14 @@ const handleSend = async (value) => {
   if (!content?.trim() || !selectedModel.value) return
   const hadConversation = !!conversationId.value
   draft.value = ''
-  await sendUserMessage(content, selectedModel.value)
+
+  const options = {}
+  if (thinkingEnabled.value) {
+    options.thinking = { type: 'enabled', budget_tokens: 4096 }
+    options.reasoningEffort = 'high'
+  }
+
+  await sendUserMessage(content, selectedModel.value, options)
   if (!hadConversation && conversationId.value) emit('conversation-created', conversationId.value)
 }
 

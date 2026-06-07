@@ -75,7 +75,9 @@ export const useChat = () => {
       provider_id: model.provider_id,
       prompt: trimmedContent,
       stream: model.supports_stream !== false,
-      max_tokens: options.maxTokens || model.max_tokens || 4096
+      max_tokens: options.maxTokens || model.max_tokens || 4096,
+      thinking: options.thinking,
+      reasoning_effort: options.reasoningEffort
     }
 
     try {
@@ -97,7 +99,19 @@ export const useChat = () => {
             return
           }
 
+          if (event.event === 'reasoning') {
+            const chunk = event.data
+            if (chunk?.data) {
+              messages.value[assistantIndex].reasoning += chunk.data
+              messages.value[assistantIndex].status = 'streaming'
+            }
+            return
+          }
+
           if (event.event === 'done') {
+            if (!messages.value[assistantIndex].reasoning && event.data?.reasoning) {
+              messages.value[assistantIndex].reasoning = event.data.reasoning
+            }
             messages.value[assistantIndex].status = 'complete'
             isStreaming.value = false
           }
@@ -123,6 +137,7 @@ export const useChat = () => {
         }
 
         messages.value[assistantIndex].content = data?.content || ''
+        messages.value[assistantIndex].reasoning = data?.reasoning || ''
         messages.value[assistantIndex].status = 'complete'
         isStreaming.value = false
       }

@@ -116,7 +116,13 @@ export const messages = {
       assistantRole: 'Kiritecho',
       systemRole: '系统',
       messageListLabel: '聊天消息',
-      sendError: '发送失败，请重试'
+      sendError: '发送失败，请重试',
+      thinking: '深度思考',
+      thinkingOn: '深度思考已开启',
+      thinkingOff: '深度思考已关闭',
+      reasoningLabel: '思考过程',
+      reasoningCollapse: '收起思考过程',
+      reasoningExpand: '展开思考过程'
     },
     settings: {
       eyebrow: '偏好设置',
@@ -255,7 +261,13 @@ export const messages = {
       assistantRole: 'Kiritecho',
       systemRole: '系統',
       messageListLabel: '聊天訊息',
-      sendError: '發送失敗，請重試'
+      sendError: '發送失敗，請重試',
+      thinking: '深度思考',
+      thinkingOn: '深度思考已開啟',
+      thinkingOff: '深度思考已關閉',
+      reasoningLabel: '思考過程',
+      reasoningCollapse: '收起思考過程',
+      reasoningExpand: '展開思考過程'
     },
     settings: {
       eyebrow: '偏好設定',
@@ -394,7 +406,13 @@ export const messages = {
       assistantRole: 'Kiritecho',
       systemRole: 'System',
       messageListLabel: 'Chat messages',
-      sendError: 'Failed to send, please try again'
+      sendError: 'Failed to send, please try again',
+      thinking: 'Deep thinking',
+      thinkingOn: 'Deep thinking enabled',
+      thinkingOff: 'Deep thinking disabled',
+      reasoningLabel: 'Thinking',
+      reasoningCollapse: 'Collapse thinking',
+      reasoningExpand: 'Expand thinking'
     },
     settings: {
       eyebrow: 'Preferences',

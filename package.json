@@ -1,6 +1,6 @@
 {
   "name": "kiritecho-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Powerful desktop AI fragmented memory tool.",
   "main": "electron/main.js",
   "scripts": {
