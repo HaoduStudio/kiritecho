@@ -15,7 +15,7 @@
       <button class="wc-win" title="Minimize" @click="minimizeWindow">
         <KtIcon name="minus" :size="16" />
       </button>
-      <button class="wc-win" title="Maximize">
+      <button class="wc-win" title="Maximize" @click="maximizeWindow">
         <span style="display: inline-block; width: 11px; height: 11px; border: 1.5px solid currentColor; border-radius: 2px" />
       </button>
       <button class="wc-win wc-win-close" title="Close" @click="closeWindow">
@@ -47,6 +47,10 @@ const toggleTheme = () => {
 
 const minimizeWindow = () => {
   window.electronAPI?.send?.('app:minimize')
+}
+
+const maximizeWindow = () => {
+  window.electronAPI?.send?.('app:maximize')
 }
 
 const closeWindow = () => {

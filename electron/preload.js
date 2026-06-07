@@ -46,7 +46,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
 
   send: (channel, data) => {
-    const validChannels = ['app:ready', 'app:minimize', 'app:close']
+    const validChannels = ['app:ready', 'app:minimize', 'app:maximize', 'app:close']
 
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
