@@ -1,44 +1,46 @@
 <template>
   <form class="chat-input" @submit.prevent="handleSubmit">
     <div class="chat-input__toolbar">
-      <t-select
+      <select
         v-if="modelOptions.length"
         v-model="selectedKey"
-        class="chat-input__model"
-        size="small"
+        class="u-input chat-input__model"
         :disabled="disabled || isLoadingModels"
         :aria-label="t('ask.modelSelectLabel')"
       >
-        <t-option
+        <option
           v-for="model in modelOptions"
           :key="model.key"
-          :label="model.label"
           :value="model.key"
-        />
-      </t-select>
+        >{{ model.label }}</option>
+      </select>
       <span v-else class="chat-input__model-empty">{{ modelEmptyText }}</span>
     </div>
 
     <div class="chat-input__body">
-      <t-textarea
+      <textarea
         v-model="draft"
-        class="chat-input__textarea"
-        :autosize="{ minRows: 2, maxRows: 4 }"
+        class="u-textarea chat-input__textarea"
         :disabled="disabled"
         :placeholder="placeholder"
         @keydown="handleKeydown"
       />
-      <t-button
-        theme="primary"
-        shape="square"
-        class="chat-input__send"
+      <button
+        type="button"
+        class="u-btn chat-input__send"
+        data-variant="solid"
+        data-color="primary"
+        data-size="md"
+        data-square="true"
         :disabled="!canSend"
-        :loading="isSending"
         :aria-label="t('ask.send')"
         @click="handleSubmit"
       >
-        <SendIcon />
-      </t-button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
     </div>
   </form>
 </template>
@@ -46,37 +48,15 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import SendIcon from 'tdesign-icons-vue-next/esm/components/send.js'
 
 const props = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  isSending: {
-    type: Boolean,
-    default: false
-  },
-  isLoadingModels: {
-    type: Boolean,
-    default: false
-  },
-  modelOptions: {
-    type: Array,
-    default: () => []
-  },
-  selectedModelKey: {
-    type: String,
-    default: ''
-  },
-  placeholder: {
-    type: String,
-    default: ''
-  },
-  modelEmptyText: {
-    type: String,
-    default: ''
-  }
+  disabled: { type: Boolean, default: false },
+  isSending: { type: Boolean, default: false },
+  isLoadingModels: { type: Boolean, default: false },
+  modelOptions: { type: Array, default: () => [] },
+  selectedModelKey: { type: String, default: '' },
+  placeholder: { type: String, default: '' },
+  modelEmptyText: { type: String, default: '' }
 })
 
 const emit = defineEmits(['send', 'update:selectedModelKey'])
@@ -95,22 +75,15 @@ const canSend = computed(() => (
   Boolean(draft.value.trim())
 ))
 
-const getKeyboardEvent = (value, context) => context?.e || value?.e || value
-
 const handleSubmit = () => {
-  if (!canSend.value) {
-    return
-  }
-
+  if (!canSend.value) return
   emit('send', draft.value)
   draft.value = ''
 }
 
-const handleKeydown = (value, context) => {
-  const event = getKeyboardEvent(value, context)
-
-  if (event?.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault()
+const handleKeydown = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
     handleSubmit()
   }
 }

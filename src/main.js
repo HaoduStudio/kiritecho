@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import TDesignChat from '@tdesign-vue-next/chat'
 
 import './styles/base.css'
 import './styles/components.css'
@@ -22,7 +21,6 @@ const bootstrap = async () => {
   const i18n = await setupI18n()
 
   app.use(i18n)
-  app.use(TDesignChat)
   app.mount('#app')
 }
 

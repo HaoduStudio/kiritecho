@@ -19,32 +19,29 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          const normalizedId = id.replace(/\\/g, '/')
+          const n = id.replace(/\\/g, '/')
 
           if (
-            normalizedId.includes('/node_modules/vue/') ||
-            normalizedId.includes('/node_modules/@vue/') ||
-            normalizedId.includes('/node_modules/vue-i18n/') ||
-            normalizedId.includes('/node_modules/@intlify/')
-          ) {
-            return 'vue-vendor'
-          }
+            n.includes('/node_modules/vue/') ||
+            n.includes('/node_modules/@vue/') ||
+            n.includes('/node_modules/vue-i18n/') ||
+            n.includes('/node_modules/@intlify/')
+          ) return 'vue-vendor'
 
-          if (normalizedId.includes('/node_modules/tdesign-vue-next/')) {
-            return 'tdesign-vendor'
-          }
+          if (n.includes('/node_modules/pdfjs-dist/')) return 'pdf-vendor'
 
-          if (normalizedId.includes('/node_modules/lodash-es/')) {
-            return 'lodash-vendor'
-          }
+          if (
+            n.includes('/node_modules/tesseract.js/') ||
+            n.includes('/node_modules/tesseract.js-core/')
+          ) return 'ocr-vendor'
 
-          if (normalizedId.includes('/node_modules/vue-country-flag-next/')) {
-            return 'country-flag-vendor'
-          }
+          if (n.includes('/node_modules/mammoth/')) return 'doc-vendor'
 
-          if (normalizedId.includes('/node_modules/')) {
-            return 'vendor'
-          }
+          if (n.includes('/node_modules/lodash-es/')) return 'lodash-vendor'
+
+          if (n.includes('/node_modules/vue-country-flag-next/')) return 'country-flag-vendor'
+
+          if (n.includes('/node_modules/')) return 'vendor'
         }
       }
     }
