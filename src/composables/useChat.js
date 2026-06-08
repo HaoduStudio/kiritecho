@@ -1,12 +1,15 @@
 import { computed, ref } from 'vue'
 import { chatMessages } from '@/services/api/conversations'
 
-export const useChat = () => {
+export const useChat = (options = {}) => {
   const messages = ref([])
   const conversationId = ref(null)
   const isStreaming = ref(false)
   const streamError = ref(null)
   const lastTraceId = ref('')
+  const lastMetadata = ref(null)
+  const onDone = options.onDone || null
+  const onMetadata = options.onMetadata || null
 
   const normalizeMessages = (items = []) => (
     items
@@ -87,6 +90,8 @@ export const useChat = () => {
             if (event.data?.conversation_id) {
               conversationId.value = event.data.conversation_id
             }
+            lastMetadata.value = event.data
+            onMetadata?.(event.data)
             return
           }
 
@@ -114,6 +119,7 @@ export const useChat = () => {
             }
             messages.value[assistantIndex].status = 'complete'
             isStreaming.value = false
+            onDone?.(event.data)
           }
         }, (meta) => {
           if (meta?.conversationId) {
@@ -163,6 +169,7 @@ export const useChat = () => {
     isStreaming,
     streamError,
     lastTraceId,
+    lastMetadata,
     setConversation,
     sendUserMessage,
     clearMessages

@@ -144,11 +144,13 @@ import { marked } from 'marked'
 import KtIcon from '@/components/KtIcon.vue'
 import { getModelKey, useModels } from '@/composables/useModels'
 import { useChat } from '@/composables/useChat'
+import { fetchConversation } from '@/services/api/conversations'
 
 const props = defineProps({
-  account: { type: Object, default: null }
+  account: { type: Object, default: null },
+  conversationId: { type: String, default: null }
 })
-const emit = defineEmits(['conversation-created'])
+const emit = defineEmits(['conversation-created', 'conversation-updated'])
 const { t } = useI18n()
 
 const draft = ref('')
@@ -157,6 +159,7 @@ const modelRef = ref(null)
 const scrollRef = ref(null)
 const thinkingEnabled = ref(false)
 const expandedReasoning = ref({})
+const metadataEmitted = ref(false)
 
 const SUGGESTIONS = [
   { icon: 'scissors', t: '截屏摘录', d: '框选屏幕，自动提炼要点' },
@@ -194,8 +197,34 @@ const {
   messages,
   conversationId,
   isStreaming,
-  sendUserMessage
-} = useChat()
+  sendUserMessage,
+  setConversation,
+  clearMessages
+} = useChat({
+  onMetadata: (data) => {
+    if (data?.conversation_id && !metadataEmitted.value) {
+      metadataEmitted.value = true
+      emit('conversation-created', data.conversation_id, {
+        id: data.conversation_id,
+        title: data.title || '',
+        title_status: data.title_status || 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+    }
+  },
+  onDone: (data) => {
+    if (data && conversationId.value) {
+      const patch = {}
+      if (data.title) patch.title = data.title
+      if (data.title_status) patch.title_status = data.title_status
+      if (data.title_updated_at) patch.title_updated_at = data.title_updated_at
+      if (Object.keys(patch).length) {
+        emit('conversation-updated', conversationId.value, patch)
+      }
+    }
+  }
+})
 
 const modelOptions = computed(() => availableModels.value.map((model) => ({
   key: getModelKey(model),
@@ -241,7 +270,7 @@ const handleSuggestion = (s) => {
 const handleSend = async (value) => {
   const content = typeof value === 'string' ? value : draft.value
   if (!content?.trim() || !selectedModel.value) return
-  const hadConversation = !!conversationId.value
+  if (!conversationId.value) metadataEmitted.value = false
   draft.value = ''
 
   const options = {}
@@ -251,11 +280,34 @@ const handleSend = async (value) => {
   }
 
   await sendUserMessage(content, selectedModel.value, options)
-  if (!hadConversation && conversationId.value) emit('conversation-created', conversationId.value)
 }
+
+const loadConversation = async (id) => {
+  if (!id) {
+    clearMessages()
+    return
+  }
+  if (conversationId.value === id) return
+  metadataEmitted.value = true
+  try {
+    const res = await fetchConversation(id)
+    const data = res?.data ?? res
+    const conv = data?.conversation || data
+    const msgs = data?.messages || []
+    setConversation(conv.id, msgs)
+  } catch (e) {
+    console.warn('Failed to load conversation:', e)
+    clearMessages()
+  }
+}
+
+watch(() => props.conversationId, (newId) => {
+  loadConversation(newId)
+})
 
 onMounted(() => {
   loadModels()
+  if (props.conversationId) loadConversation(props.conversationId)
   const handleClickOutside = (e) => { if (modelRef.value && !modelRef.value.contains(e.target)) modelOpen.value = false }
   document.addEventListener('mousedown', handleClickOutside)
 })

@@ -26,6 +26,114 @@
 }
 .user-card:hover { background: var(--ui-bg-elevated); border-color: var(--ui-border); }
 
+/* New chat button */
+.sb-new-chat {
+  display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+  padding: 9px 11px; border-radius: 9px; border: none; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--ui-text-toned);
+  background: transparent; transition: background-color .12s, color .12s;
+  font-family: inherit; margin-bottom: 4px;
+}
+.sb-new-chat:hover { background: var(--ui-bg-elevated); color: var(--ui-text-highlighted); }
+
+/* Conversation list */
+.conv-list { display: flex; flex-direction: column; gap: 1px; }
+
+.conv-item {
+  display: flex; align-items: center; gap: 0; width: 100%;
+  padding: 0 4px 0 0; border-radius: 9px; border: none; cursor: pointer;
+  background: transparent; transition: background-color .12s;
+  font-family: inherit; position: relative;
+}
+.conv-item:hover { background: var(--ui-bg-elevated); }
+.conv-item[data-active="true"] { background: var(--ui-primary-soft); }
+
+.conv-item-inner {
+  flex: 1; min-width: 0; display: flex; align-items: center;
+  padding: 8px 0 8px 12px; gap: 9px; border: none; background: none;
+  cursor: pointer; font-family: inherit; text-align: left;
+}
+
+.conv-title {
+  font-size: 13.5px; font-weight: 500; color: var(--ui-text-toned);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  line-height: 1.4; flex: 1; min-width: 0;
+}
+.conv-item[data-active="true"] .conv-title { color: var(--ui-primary); font-weight: 600; }
+.conv-item:hover .conv-title { color: var(--ui-text-highlighted); }
+
+/* Title loading shimmer */
+.conv-title-loading {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: var(--ui-text-dimmed);
+}
+.conv-title-loading .conv-dots {
+  display: inline-flex; gap: 3px;
+}
+.conv-title-loading .conv-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--ui-text-dimmed);
+  animation: kt-pulse-dot 1.2s ease-in-out infinite;
+}
+.conv-title-loading .conv-dot:nth-child(2) { animation-delay: .2s; }
+.conv-title-loading .conv-dot:nth-child(3) { animation-delay: .4s; }
+
+/* Context menu trigger on hover */
+.conv-actions {
+  display: flex; align-items: center; flex-shrink: 0;
+  opacity: 0; transition: opacity .12s;
+}
+.conv-item:hover .conv-actions { opacity: 1; }
+
+.conv-action-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 6px; border: none;
+  background: transparent; cursor: pointer; color: var(--ui-text-muted);
+  transition: background-color .12s, color .12s; font-family: inherit;
+}
+.conv-action-btn:hover { background: var(--ui-bg-accented); color: var(--ui-text-highlighted); }
+.conv-action-btn.danger:hover { color: #ef4444; }
+
+/* Context menu */
+.conv-menu {
+  position: absolute; right: 0; top: 100%; z-index: 50;
+  min-width: 140px; padding: 4px;
+  background: var(--ui-bg); border: 1px solid var(--ui-border);
+  border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+}
+:root[theme-mode="dark"] .conv-menu { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+.conv-menu-item {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 7px 10px; border-radius: 7px; border: none; cursor: pointer;
+  font-size: 13px; font-weight: 500; color: var(--ui-text-toned);
+  background: transparent; transition: background-color .1s, color .1s;
+  font-family: inherit; text-align: left;
+}
+.conv-menu-item:hover { background: var(--ui-bg-elevated); color: var(--ui-text-highlighted); }
+.conv-menu-item.danger { color: #ef4444; }
+.conv-menu-item.danger:hover { background: color-mix(in oklab, #ef4444 10%, var(--ui-bg)); }
+
+/* Inline rename input */
+.conv-rename-input {
+  width: 100%; font-size: 13.5px; font-weight: 500;
+  color: var(--ui-text-highlighted); background: var(--ui-bg);
+  border: 1px solid var(--ui-primary); border-radius: 5px;
+  padding: 2px 6px; outline: none; font-family: inherit;
+}
+
+/* Separator between nav and conversations */
+.sb-separator { height: 1px; background: var(--ui-border-muted); margin: 4px 12px; }
+
+/* Load more */
+.conv-load-more {
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px 0; border: none; background: transparent; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: var(--ui-text-dimmed);
+  font-family: inherit; transition: color .12s;
+}
+.conv-load-more:hover { color: var(--ui-primary); }
+
 .app-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--ui-bg); }
 
 .view-head { padding: 26px 40px 0; flex-shrink: 0; }

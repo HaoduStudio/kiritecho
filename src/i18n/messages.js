@@ -95,7 +95,15 @@ export const messages = {
     main: {
       navigation: '主导航',
       ask: '提问',
-      settings: '设置'
+      settings: '设置',
+      recentChats: '最近',
+      newChat: '新对话',
+      noConversations: '暂无对话',
+      titleGenerating: '正在生成标题…',
+      deleteChat: '删除对话',
+      deleteChatConfirm: '确定要删除这个对话吗？',
+      renameChat: '重命名',
+      loadMore: '加载更多'
     },
     ask: {
       eyebrow: 'AI 对话',
@@ -240,7 +248,15 @@ export const messages = {
     main: {
       navigation: '主導覽',
       ask: '提問',
-      settings: '設定'
+      settings: '設定',
+      recentChats: '最近',
+      newChat: '新對話',
+      noConversations: '暫無對話',
+      titleGenerating: '正在生成標題…',
+      deleteChat: '刪除對話',
+      deleteChatConfirm: '確定要刪除這個對話嗎？',
+      renameChat: '重新命名',
+      loadMore: '載入更多'
     },
     ask: {
       eyebrow: 'AI 對話',
@@ -385,7 +401,15 @@ export const messages = {
     main: {
       navigation: 'Main navigation',
       ask: 'Ask',
-      settings: 'Settings'
+      settings: 'Settings',
+      recentChats: 'Recent',
+      newChat: 'New chat',
+      noConversations: 'No conversations yet',
+      titleGenerating: 'Generating title…',
+      deleteChat: 'Delete chat',
+      deleteChatConfirm: 'Are you sure you want to delete this chat?',
+      renameChat: 'Rename',
+      loadMore: 'Load more'
     },
     ask: {
       eyebrow: 'AI conversation',
